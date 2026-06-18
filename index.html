@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="copyright" content="© SEALS SYSTEMS. All rights reserved. Unauthorised reproduction or distribution prohibited.">
+    <meta name="author" content="SEALS">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
     <title>MONLITH // NEXUS PRO</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600&family=Share+Tech+Mono&display=swap');
@@ -17,6 +21,7 @@
         }
 
         * { box-sizing: border-box; }
+        button, [onclick], .lucky-drop { touch-action: manipulation; }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -36,6 +41,135 @@
             background-size: 40px 40px;
             pointer-events: none;
             z-index: 0;
+        }
+
+        /* ─── STREAK MODAL ─── */
+        #streakBanner {
+            position: fixed; inset: 0; z-index: 9200;
+            background: rgba(5, 8, 12, 0.82);
+            backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        #streakBanner.show { opacity: 1; pointer-events: all; }
+        #streakModal {
+            background: rgba(10, 22, 16, 0.97);
+            border: 1px solid rgba(52, 211, 153, 0.45);
+            box-shadow: 0 0 60px rgba(52,211,153,0.12), 0 0 120px rgba(52,211,153,0.06);
+            padding: 48px 52px 44px;
+            width: 440px; max-width: calc(100vw - 32px);
+            position: relative;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        /* corner accents */
+        #streakModal::before, #streakModal::after {
+            content: ''; position: absolute;
+            width: 18px; height: 18px;
+            border-color: #34d399; border-style: solid;
+            opacity: 0.7;
+        }
+        #streakModal::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        #streakModal::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+        #streakModalClose {
+            position: absolute; top: 16px; right: 18px;
+            cursor: pointer; font-size: 0.65rem; letter-spacing: 2px;
+            color: rgba(52,211,153,0.4); transition: color 0.2s;
+        }
+        #streakModalClose:hover { color: #34d399; }
+
+        /* ─── SURGE EVENT ─── */
+        #surgeOverlay {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            z-index: 8000; pointer-events: none;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            opacity: 0; transition: opacity 0.4s;
+        }
+        #surgeOverlay.active { opacity: 1; pointer-events: all; }
+        #surgeLabel {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
+            letter-spacing: 4px; color: #a78bfa; text-align: center;
+        }
+        #surgeTimer {
+            font-size: 2rem; font-weight: 200; color: #a78bfa;
+            text-shadow: 0 0 30px rgba(167,139,250,0.6);
+            font-family: 'Inter', sans-serif; letter-spacing: -2px;
+        }
+        #surgeBar {
+            width: 200px; height: 3px; background: rgba(167,139,250,0.2);
+            border-radius: 2px; overflow: hidden;
+        }
+        #surgeBarFill {
+            height: 100%; background: #a78bfa;
+            box-shadow: 0 0 8px #a78bfa;
+            transition: width 0.1s linear;
+        }
+
+        /* ─── SURGE ANNOUNCE ─── */
+        #surgeAnnounce {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.8);
+            z-index: 9500; pointer-events: none;
+            font-family: 'Share Tech Mono', monospace; font-size: 1.2rem;
+            letter-spacing: 6px; color: #a78bfa;
+            text-shadow: 0 0 40px rgba(167,139,250,0.8);
+            opacity: 0; transition: opacity 0.3s, transform 0.3s;
+        }
+        #surgeAnnounce.pop { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+
+        /* ─── CRIT FLASH ─── */
+        .crit-pop {
+            position: fixed; pointer-events: none; z-index: 9000;
+            font-family: 'Share Tech Mono', monospace; font-size: 1.1rem;
+            letter-spacing: 2px; color: #fbbf24;
+            text-shadow: 0 0 20px rgba(251,191,36,0.8);
+            animation: critFloat 1.1s ease-out forwards;
+        }
+        @keyframes critFloat {
+            0%   { opacity: 1; transform: translateY(0) scale(1.2); }
+            60%  { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-80px) scale(0.8); }
+        }
+
+        /* ─── LUCKY DROP ─── */
+        .lucky-drop {
+            position: fixed; z-index: 7500; cursor: pointer;
+            font-size: 1.4rem; user-select: none;
+            animation: dropFall linear forwards;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--blue);
+            text-shadow: 0 0 12px rgba(0,242,255,0.7), 0 0 24px rgba(0,242,255,0.3);
+        }
+        @keyframes dropFall {
+            0%   { top: -50px; opacity: 0; }
+            8%   { opacity: 1; }
+            80%  { opacity: 1; }
+            100% { top: calc(100vh - 380px); opacity: 0; }
+        }
+
+        /* ─── MILESTONE BAR (bottom of right panel) ─── */
+        #milestoneWrap {
+            margin-top: 20px; padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        .ms-label {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
+            letter-spacing: 3px; color: rgba(0,242,255,0.4); margin-bottom: 8px;
+        }
+        .ms-goal {
+            font-size: 0.78rem; font-weight: 600; color: var(--blue);
+            margin-bottom: 6px; letter-spacing: 1px;
+        }
+        .ms-bar-track {
+            height: 4px; background: rgba(0,242,255,0.1); border-radius: 2px; overflow: hidden;
+        }
+        .ms-bar-fill {
+            height: 100%; background: var(--blue);
+            box-shadow: 0 0 8px rgba(0,242,255,0.4);
+            transition: width 0.4s ease;
+        }
+        .ms-sub {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
+            color: rgba(0,242,255,0.3); margin-top: 5px; letter-spacing: 1px;
         }
 
         /* ─── ACCESS SCREEN ─── */
@@ -349,7 +483,7 @@
             padding-right: 10px;
         }
 
-        #core-right { width: 350px; padding-left: 40px; border-left: 1px solid var(--border); overflow-y: auto; }
+        #core-right { width: 350px; margin-left: 40px; padding-left: 55px; padding-right: 8px; border-left: 1px solid var(--border); overflow-y: auto; }
 
         .val { font-size: 3.5rem; font-weight: 200; letter-spacing: -3px; color: var(--blue); text-shadow: 0 0 20px rgba(0, 242, 255, 0.2); line-height: 1; }
         
@@ -357,8 +491,67 @@
         .btn-action:hover:not(:disabled) { border-color: var(--blue); background: rgba(0, 242, 255, 0.05); }
         .btn-action:disabled { opacity: 0.3; filter: grayscale(1); }
 
-        .harvest-btn { border: 1px solid var(--blue); color: var(--blue); padding: 25px; cursor: pointer; background: transparent; font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+        .harvest-btn { border: 1px solid var(--blue); color: var(--blue); padding: 25px; cursor: pointer; background: transparent; font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; position: relative; overflow: visible; }
         .harvest-btn:hover { background: var(--blue); color: var(--bg); box-shadow: 0 0 30px rgba(0, 242, 255, 0.3); }
+
+        @keyframes harvestPulse {
+            0%   { transform: scale(1); box-shadow: 0 0 0px rgba(0,242,255,0); }
+            30%  { transform: scale(0.96); box-shadow: 0 0 18px rgba(0,242,255,0.5); }
+            60%  { transform: scale(1.03); box-shadow: 0 0 30px rgba(0,242,255,0.3); }
+            100% { transform: scale(1); box-shadow: 0 0 0px rgba(0,242,255,0); }
+        }
+        .harvest-btn.clicked { animation: harvestPulse 0.22s ease-out forwards; }
+
+        @keyframes btnPulse {
+            0%   { transform: scale(1);    box-shadow: 0 0 0px rgba(0,242,255,0); }
+            25%  { transform: scale(0.97); box-shadow: 0 0 12px rgba(0,242,255,0.4); }
+            70%  { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,242,255,0.2); }
+            100% { transform: scale(1);    box-shadow: 0 0 0px rgba(0,242,255,0); }
+        }
+        .btn-action.clicked { animation: btnPulse 0.2s ease-out forwards; }
+
+        @keyframes floatUp {
+            0%   { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-70px) scale(0.7); }
+        }
+        .coin-pop {
+            position: fixed;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--blue);
+            text-shadow: 0 0 10px var(--blue);
+            pointer-events: none;
+            z-index: 9999;
+            animation: floatUp 0.75s ease-out forwards;
+            letter-spacing: 1px;
+        }
+
+        @keyframes rippleOut {
+            0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.6; }
+            100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+        }
+        .harvest-ripple {
+            position: fixed;
+            width: 50px; height: 50px;
+            border: 2px solid var(--blue);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: rippleOut 0.5s ease-out forwards;
+        }
+
+        #comboDisplay {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--blue);
+            text-align: center;
+            height: 18px;
+            transition: opacity 0.4s;
+            opacity: 0;
+            text-shadow: 0 0 10px rgba(0,242,255,0.5);
+        }
 
         input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; background: #1a2a3a; }
@@ -366,6 +559,20 @@
         
         h3 { font-weight: 300; letter-spacing: 2px; color: var(--blue); text-transform: uppercase; font-size: 0.8rem; }
         .research-card { background: var(--panel); border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; font-size: 0.85rem; }
+
+        /* ─── ACHIEVEMENTS ─── */
+        .ach-card { padding: 12px 14px; margin-bottom: 8px; border-radius: 2px; transition: opacity 0.3s; }
+        .ach-unlocked { background: rgba(0,242,255,0.05); border: 1px solid rgba(0,242,255,0.4); opacity: 1; }
+        .ach-locked { background: var(--panel); border: 1px solid var(--border); opacity: 0.45; }
+        .ach-name { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; color: var(--text); }
+        .ach-unlocked .ach-name { color: var(--blue); }
+        .ach-desc { font-size: 0.7rem; opacity: 0.55; margin-top: 4px; line-height: 1.4; }
+
+        #achToast { position: fixed; top: 24px; right: 24px; z-index: 9500; display: flex; flex-direction: column; gap: 8px; pointer-events: none; max-width: calc(100vw - 32px); }
+        .ach-toast-card { background: #0a1018; border: 1px solid var(--blue); box-shadow: 0 0 16px rgba(0,242,255,0.2); padding: 7px 10px; width: 160px; max-width: 100%; font-family: 'Share Tech Mono', monospace; opacity: 0; transform: translateX(20px); transition: all 0.35s ease; box-sizing: border-box; }
+        .ach-toast-card .ach-toast-label { font-size: 0.45rem; letter-spacing: 1.5px; color: rgba(0,242,255,0.6); margin-bottom: 2px; }
+        .ach-toast-card .ach-toast-name { font-size: 0.6rem; color: var(--blue); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 1px; }
+        .ach-toast-card .ach-toast-desc { font-size: 0.5rem; color: rgba(224,233,240,0.5); line-height: 1.25; }
 
         /* session tag in main app */
         #sessionTag {
@@ -391,8 +598,12 @@
             #mainApp { flex-direction: column; padding: 24px 24px 40px; height: auto; min-height: 100vh; overflow-y: auto; }
             body { overflow: auto; }
             #core-left { padding-right: 0; height: auto; overflow: visible; }
-            #core-right { width: 100%; padding-left: 0; border-left: none; border-top: 1px solid var(--border); padding-top: 24px; margin-top: 8px; overflow-y: visible; }
+            #core-right { width: 100%; margin-left: 0; padding-left: 0; border-left: none; border-top: 1px solid var(--border); padding-top: 24px; margin-top: 8px; overflow-y: visible; }
             #sessionTag { top: 12px; right: 16px; font-size: 0.55rem; }
+
+            /* Achievements: slightly tighter on tablet */
+            .ach-card { padding: 10px 12px; }
+            .ach-toast-card { width: 150px; }
         }
 
         /* ─── RESPONSIVE: PHONE ─── */
@@ -423,18 +634,268 @@
 
             /* Research tree: make 3-col grid scroll or go 1-col */
             .res-tree-card { font-size: 0.75rem; }
+
+            /* Achievements: still compact on phone, but bigger than before */
+            .ach-card { padding: 9px 11px; margin-bottom: 6px; }
+            .ach-name { font-size: 0.72rem; }
+            .ach-desc { font-size: 0.62rem; }
+            #achToast { top: 12px; right: 12px; left: 12px; align-items: center; }
+            .ach-toast-card { width: 100%; max-width: 220px; padding: 6px 10px; }
+
+            /* Tamper overlay: fit small screens */
+            .tamper-icon { font-size: 2.2rem; margin-bottom: 16px; }
+            .tamper-title { font-size: 1rem; letter-spacing: 4px; margin-bottom: 10px; }
+            .tamper-sub { font-size: 0.55rem; letter-spacing: 2px; margin-bottom: 22px; }
+            .tamper-box { padding: 20px 18px; }
+            .tamper-line { font-size: 0.62rem; letter-spacing: 1px; }
+            .tamper-copy { font-size: 0.52rem; letter-spacing: 2px; }
+            #tamperCountdown { font-size: 0.58rem; letter-spacing: 2px; }
+            .tamper-bypass { margin-top: 26px; }
+            .tamper-bypass-row button { flex: 1 1 100px; }
         }
 
-        /* Touch: make harvest button more finger-friendly */
+        /* Touch: make harvest button more finger-friendly, keep bypass key visible without hover */
         @media (hover: none) and (pointer: coarse) {
             .harvest-btn { min-height: 64px; }
             .btn-action { min-height: 52px; }
             .access-btn { min-height: 56px; }
             input[type=range]::-webkit-slider-thumb { height: 22px; width: 22px; margin-top: -10px; }
+            .tamper-bypass { opacity: 0.7; }
+        }
+        /* ─── ADDICTIVE FEATURES — RESPONSIVE ─── */
+
+        /* Streak modal — tablet */
+        @media (max-width: 1024px) {
+            #streakModal { padding: 40px 40px 36px; width: 400px; }
+            #streakDayText { font-size: 1.5rem; letter-spacing: 4px; }
+            #streakFlames { font-size: 2rem; }
+        }
+
+        /* Streak modal — phone */
+        @media (max-width: 600px) {
+            #streakModal {
+                padding: 36px 24px 28px;
+                width: calc(100vw - 32px);
+                box-sizing: border-box;
+            }
+            #streakDayText { font-size: 1.3rem; letter-spacing: 3px; }
+            #streakFlames { font-size: 1.8rem; margin-bottom: 8px; }
+            #streakBonusText { font-size: 0.72rem; letter-spacing: 2px; }
+            #streakMsg { font-size: 0.6rem; letter-spacing: 1px; margin-bottom: 18px; }
+            #streakModalClose { font-size: 0.6rem; top: 12px; right: 14px; padding: 8px; }
+            #streakModal button { min-height: 52px; font-size: 0.72rem; letter-spacing: 2px; padding: 14px; }
+        }
+
+        /* Surge overlay — on mobile sit at top-centre to avoid overlapping controls */
+        @media (max-width: 1024px) {
+            #surgeOverlay {
+                bottom: auto;
+                top: 16px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            #surgeLabel { font-size: 0.6rem; letter-spacing: 2px; }
+            #surgeBar { width: 160px; }
+        }
+
+        /* Surge announce — shrink for phones */
+        @media (max-width: 600px) {
+            #surgeAnnounce {
+                font-size: 0.85rem;
+                letter-spacing: 3px;
+                width: 90vw;
+                text-align: center;
+            }
+        }
+
+        /* Lucky drops — on mobile stop higher to clear stacked controls */
+        @media (max-width: 1024px) {
+            @keyframes dropFall {
+                0%   { top: -50px; opacity: 0; }
+                8%   { opacity: 1; }
+                80%  { opacity: 1; }
+                100% { top: calc(100vh - 160px); opacity: 0; }
+            }
+        }
+
+        /* Milestone wrap — tighten on phone */
+        @media (max-width: 600px) {
+            #milestoneWrap { margin-top: 14px; padding-top: 12px; }
+            .ms-goal { font-size: 0.7rem; }
+            .ms-sub { font-size: 0.55rem; }
+        }
+
+        /* Touch targets — make lucky drops easier to tap */
+        @media (hover: none) and (pointer: coarse) {
+            .lucky-drop { font-size: 2rem; }
+            #streakModal button { min-height: 56px; }
+            #streakModalClose { padding: 10px 14px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+        }
+
+        /* ─── TAMPER OVERLAY ─── */
+        #tamperOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5,8,12,0.97);
+            z-index: 99999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: center;
+            gap: 0;
+            padding: 24px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        #tamperOverlay.active { display: flex; }
+        .tamper-icon {
+            font-size: 3rem;
+            color: var(--red);
+            text-shadow: 0 0 40px rgba(255,68,102,0.8);
+            animation: tamperPulse 1s ease-in-out infinite;
+            margin-bottom: 24px;
+        }
+        @keyframes tamperPulse {
+            0%,100% { text-shadow: 0 0 30px rgba(255,68,102,0.6); }
+            50% { text-shadow: 0 0 70px rgba(255,68,102,1), 0 0 120px rgba(255,68,102,0.4); }
+        }
+        .tamper-title {
+            font-size: 1.4rem;
+            letter-spacing: 8px;
+            color: var(--red);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .tamper-sub {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: rgba(255,68,102,0.6);
+            margin-bottom: 32px;
+        }
+        .tamper-box {
+            background: rgba(255,68,102,0.05);
+            border: 1px solid rgba(255,68,102,0.25);
+            padding: 28px 40px;
+            width: 100%;
+            max-width: 480px;
+            box-sizing: border-box;
+            margin-bottom: 28px;
+        }
+        .tamper-line {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: rgba(255,68,102,0.5);
+            line-height: 2;
+        }
+        .tamper-copy {
+            font-size: 0.6rem;
+            letter-spacing: 3px;
+            color: rgba(255,68,102,0.3);
+            margin-top: 16px;
+        }
+        #tamperCountdown {
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            color: rgba(255,68,102,0.4);
+            margin-top: 20px;
+        }
+        .tamper-bypass {
+            margin-top: 36px;
+            opacity: 0.45;
+            transition: opacity 0.3s;
+            width: 100%;
+            max-width: 320px;
+        }
+        .tamper-bypass:hover, .tamper-bypass:focus-within { opacity: 1; }
+        .tamper-bypass-label {
+            font-size: 0.55rem;
+            letter-spacing: 3px;
+            color: rgba(255,68,102,0.4);
+            margin-bottom: 10px;
+        }
+        .tamper-bypass-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tamper-bypass-row input {
+            background: rgba(255,68,102,0.04);
+            border: 1px solid rgba(255,68,102,0.25);
+            color: rgba(255,68,102,0.8);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            padding: 10px 12px;
+            outline: none;
+            flex: 1 1 140px;
+            min-width: 0;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .tamper-bypass-row input:focus { border-color: rgba(255,68,102,0.6); }
+        .tamper-bypass-row button {
+            background: transparent;
+            border: 1px solid rgba(255,68,102,0.4);
+            color: rgba(255,68,102,0.8);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tamper-bypass-row button:hover { background: rgba(255,68,102,0.1); }
+        .tamper-bypass-err {
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: rgba(255,68,102,0);
+            height: 14px;
+            margin-top: 8px;
+            transition: color 0.2s;
+        }
+        /* ─── SELECTION BLOCK ─── */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+        /* allow text selection inside inputs only */
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
         }
     </style>
 </head>
 <body>
+
+<!-- ─── TAMPER OVERLAY ─── -->
+<div id="tamperOverlay">
+    <div class="tamper-icon">⚠</div>
+    <div class="tamper-title">SECURITY BREACH DETECTED</div>
+    <div class="tamper-sub">// UNAUTHORISED ACCESS ATTEMPT LOGGED //</div>
+    <div class="tamper-box">
+        <div class="tamper-line">⬡ DEVELOPER TOOLS INTRUSION DETECTED</div>
+        <div class="tamper-line">⬡ INCIDENT TIMESTAMP RECORDED</div>
+        <div class="tamper-line">⬡ SYSTEM LOCKDOWN INITIATED</div>
+        <div class="tamper-line">⬡ CONTACT: SEALS SYSTEMS SECURITY</div>
+    </div>
+    <div class="tamper-copy">© SEALS SYSTEMS — ALL RIGHTS RESERVED</div>
+    <div class="tamper-copy">UNAUTHORISED REPRODUCTION OR REVERSE ENGINEERING PROHIBITED</div>
+    <div id="tamperCountdown"></div>
+
+    <div class="tamper-bypass">
+        <div class="tamper-bypass-label">⬡ OWNER OVERRIDE</div>
+        <div class="tamper-bypass-row">
+            <input id="tamperBypassInput" type="password" placeholder="bypass key..." autocomplete="off"
+                onkeydown="if(event.key==='Enter') tamperBypass()">
+            <button onclick="tamperBypass()">UNLOCK</button>
+        </div>
+        <div id="tamperBypassErr" class="tamper-bypass-err"></div>
+    </div>
+</div>
 
 <div id="successFlash"></div>
 
@@ -488,9 +949,10 @@
     <div id="sessionTag">SESSION: ACTIVE // OPERATOR: SEALS</div>
     <div id="core-left">
         <div id="top-section">
-            <div id="cDisp" class="val">0</div>
+            <div id="cDisp" class="val">0 coins</div>
             <div id="ppsDisplay" style="color:var(--blue); opacity: 0.8;">PPS: 0</div>
-            <button class="harvest-btn" onclick="MONLITH.manualClick()">INITIATE HARVEST</button>
+            <button class="harvest-btn" id="harvestBtn" onclick="MONLITH.manualClick(event)" ontouchstart="MONLITH.manualClick(event)" style="touch-action:manipulation;">INITIATE HARVEST</button>
+            <div id="comboDisplay"></div>
             <div style="font-size:0.68rem;opacity:0.3;letter-spacing:1px;margin-top:-6px;">Click to manually harvest coins. Boosted by click research.</div>
             <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--blue);">SYSTEM GAIN SCALE</label>
             <div style="font-size:0.68rem;opacity:0.3;letter-spacing:1px;margin-top:-8px;">Scales all passive production up or down. Centre = 1×.</div>
@@ -507,15 +969,15 @@
                     <span style="font-weight:600;letter-spacing:1px;font-size:0.9rem;">UNLOCK NEXUS</span>
                     <span id="nexusPct" style="font-size:0.7rem;color:var(--blue);opacity:0.7;font-family:'Share Tech Mono',monospace;">0%</span>
                 </div>
-                <div style="font-size:0.72rem;opacity:0.4;margin-bottom:12px;line-height:1.4;">Spend 1,000,000 coins to unlock the Research Nexus and gain access to permanent upgrades.</div>
+                <div style="font-size:0.72rem;opacity:0.4;margin-bottom:12px;line-height:1.4;">Spend 100,000 coins to unlock the Research Nexus and gain access to permanent upgrades.</div>
                 <div style="background:#0a1420;border:1px solid var(--border);height:4px;margin-bottom:12px;overflow:hidden;">
                     <div id="nexusBar" style="height:100%;width:0%;background:var(--blue);box-shadow:0 0 8px var(--blue);transition:width 0.3s;"></div>
                 </div>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-                    <span style="font-size:0.72rem;opacity:0.4;font-family:'Share Tech Mono',monospace;">TARGET: 1,000,000</span>
-                    <span id="nexusRemaining" style="font-size:0.72rem;color:var(--blue);opacity:0.6;font-family:'Share Tech Mono',monospace;">NEED: 1,000,000</span>
+                    <span style="font-size:0.72rem;opacity:0.4;font-family:'Share Tech Mono',monospace;">TARGET: 100,000</span>
+                    <span id="nexusRemaining" style="font-size:0.72rem;color:var(--blue);opacity:0.6;font-family:'Share Tech Mono',monospace;">NEED: 100,000</span>
                 </div>
-                <button id="nexusUnlockBtn" onclick="MONLITH.unlockResearch()" disabled
+                <button id="nexusUnlockBtn" onclick="btnClick(this);MONLITH.unlockResearch()" disabled
                     style="width:100%;background:transparent;border:1px solid rgba(0,242,255,0.2);color:rgba(0,242,255,0.3);font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:3px;padding:14px;cursor:not-allowed;transition:all 0.3s;">
                     LOCKED
                 </button>
@@ -523,13 +985,32 @@
         </div>
         
         <div id="ascendSection" style="margin-top:30px;">
-            <button id="realAscendBtn" class="btn-action" onclick="MONLITH.prestige()" disabled style="border: 1px solid var(--blue);">
+            <div id="shardDisplay" style="font-family:'Share Tech Mono',monospace;font-size:0.85rem;letter-spacing:2px;color:var(--red);text-shadow:0 0 10px rgba(255,68,102,0.4);margin-bottom:4px;">⬡ SHARDS: 0</div>
+            <div style="font-size:0.65rem;opacity:0.35;letter-spacing:1px;margin-bottom:10px;">Each shard is worth 1/2 a research point (DP).</div>
+            <button id="realAscendBtn" class="btn-action" onclick="btnClick(this);MONLITH.prestige()" disabled style="border: 1px solid var(--blue);">
                 REAL ASCEND
                 <div style="font-size:0.72rem;opacity:0.4;margin:4px 0 2px;line-height:1.4;">Reset all coins and generators in exchange for Shards — a permanent multiplier that stacks across every ascension.</div>
-                <small id="ascendReq">REQ: 10,000,000 COINS</small>
+                <small id="ascendReq">REQ: 1,000,000 COINS</small>
             </button>
         </div>
         <div id="researchArea"></div>
+
+        <!-- ─── ACHIEVEMENTS SECTION ─── -->
+        <div style="margin-top:30px;">
+            <h3 style="display:flex;justify-content:space-between;align-items:baseline;">
+                <span>ACHIEVEMENTS</span>
+                <span id="achCounter" style="font-size:0.7rem;color:var(--blue);opacity:0.6;font-family:'Share Tech Mono',monospace;">0 / 0</span>
+            </h3>
+            <div id="achList"></div>
+        </div>
+
+        <!-- ─── MILESTONE WIDGET ─── -->
+        <div id="milestoneWrap">
+            <div class="ms-label">⬡ NEXT GOAL</div>
+            <div class="ms-goal" id="msGoalText">—</div>
+            <div class="ms-bar-track"><div class="ms-bar-fill" id="msBarFill" style="width:0%"></div></div>
+            <div class="ms-sub" id="msSubText"></div>
+        </div>
 
         <!-- ─── FILE SECTION ─── -->
         <div style="margin-top:30px;">
@@ -539,16 +1020,16 @@
                 <div id="saveStatusMsg" style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:2px;color:rgba(0,242,255,0.3);transition:color 0.4s;">LAST SAVED: —</div>
             </div>
             <div style="display:flex;gap:8px;margin-bottom:10px;">
-                <button class="btn-action" style="margin-bottom:0;flex:1;color:rgba(0,242,255,0.7);border-color:rgba(0,242,255,0.2);text-align:center;padding:14px 10px;" onclick="MONLITH.exportSave()">
+                <button class="btn-action" style="margin-bottom:0;flex:1;color:rgba(0,242,255,0.7);border-color:rgba(0,242,255,0.2);text-align:center;padding:14px 10px;" onclick="btnClick(this);MONLITH.exportSave()">
                     ⬡ EXPORT SAVE
                     <div style="font-size:0.65rem;opacity:0.4;margin-top:3px;">Copy to clipboard</div>
                 </button>
-                <button class="btn-action" style="margin-bottom:0;flex:1;color:rgba(0,242,255,0.7);border-color:rgba(0,242,255,0.2);text-align:center;padding:14px 10px;" onclick="MONLITH.showImport()">
+                <button class="btn-action" style="margin-bottom:0;flex:1;color:rgba(0,242,255,0.7);border-color:rgba(0,242,255,0.2);text-align:center;padding:14px 10px;" onclick="btnClick(this);MONLITH.showImport()">
                     ⬡ IMPORT SAVE
                     <div style="font-size:0.65rem;opacity:0.4;margin-top:3px;">Paste save string</div>
                 </button>
             </div>
-            <button class="btn-action" style="color:#ff8e8e;border-color:rgba(255,142,142,0.2);" onclick="MONLITH.confirmReset()">
+            <button class="btn-action" style="color:#ff8e8e;border-color:rgba(255,142,142,0.2);" onclick="btnClick(this);MONLITH.confirmReset()">
                 RESET ALL DATA
                 <div style="font-size:0.72rem;opacity:0.35;margin-top:4px;line-height:1.4;">Permanently wipes all progress, shards, and research. Cannot be undone.</div>
             </button>
@@ -581,7 +1062,7 @@
 
         <!-- CONFIRMATION MODAL -->
         <div id="resetModal" style="display:none; position:fixed; inset:0; background:rgba(5,8,12,0.85); backdrop-filter:blur(8px); z-index:9000; align-items:center; justify-content:center;">
-            <div style="background:#0a1018; border:1px solid rgba(255,68,102,0.4); padding:50px 50px 40px; width:440px; position:relative; font-family:'Share Tech Mono',monospace;">
+            <div style="background:#0a1018; border:1px solid rgba(255,68,102,0.4); padding:50px 50px 40px; width:440px; max-width:calc(100vw - 32px); box-sizing:border-box; position:relative; font-family:'Share Tech Mono',monospace;">
                 <!-- corner accents -->
                 <div style="position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid #ff4466;border-left:2px solid #ff4466;"></div>
                 <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid #ff4466;border-right:2px solid #ff4466;"></div>
@@ -620,12 +1101,48 @@
     </div>
 </div>
 
+<!-- ─── STREAK MODAL ─── -->
+<div id="streakBanner">
+    <div id="streakModal">
+        <span id="streakModalClose" onclick="document.getElementById('streakBanner').classList.remove('show')">✕ CLOSE</span>
+        <div style="font-size:0.55rem;letter-spacing:5px;color:rgba(52,211,153,0.5);margin-bottom:20px;">⬡ DAILY LOGIN STREAK</div>
+        <div id="streakFlames" style="font-size:2.4rem;margin-bottom:12px;text-align:center;">🔥</div>
+        <div id="streakDayText" style="font-size:1.8rem;font-weight:200;letter-spacing:6px;color:#34d399;text-align:center;margin-bottom:6px;text-shadow:0 0 30px rgba(52,211,153,0.5);">DAY 1</div>
+        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(52,211,153,0.3),transparent);margin:18px 0;"></div>
+        <div id="streakBonusText" style="font-size:0.8rem;letter-spacing:3px;color:#34d399;text-align:center;margin-bottom:6px;"></div>
+        <div id="streakMsg" style="font-size:0.65rem;color:rgba(52,211,153,0.45);letter-spacing:2px;text-align:center;line-height:1.6;margin-bottom:24px;"></div>
+        <button onclick="document.getElementById('streakBanner').classList.remove('show')"
+            style="width:100%;background:transparent;border:1px solid rgba(52,211,153,0.4);color:#34d399;font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:4px;padding:16px;cursor:pointer;transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(52,211,153,0.08)'"
+            onmouseout="this.style.background='transparent'">
+            CLAIM BONUS
+        </button>
+    </div>
+</div>
+
+<!-- ─── SURGE OVERLAY ─── -->
+<div id="surgeOverlay">
+    <div id="surgeLabel">⬡ DATA SURGE ACTIVE — ×3 OUTPUT</div>
+    <div id="surgeTimer">30</div>
+    <div id="surgeBar"><div id="surgeBarFill" style="width:100%"></div></div>
+</div>
+
+<!-- ─── SURGE ANNOUNCE ─── -->
+<div id="surgeAnnounce">⚡ DATA SURGE INCOMING ⚡</div>
+
 <script>
 /* ─── ACCESS UI ─── */
 const accessUI = (() => {
     const PASSWORD = 'SEALS';
-    let attempts = 3;
+    const MAX_ATTEMPTS = 3;
+    const BASE_LOCKOUT_MS = 3 * 60 * 1000; // 3 minutes
+    let attempts = MAX_ATTEMPTS;
     let visible = false;
+    let lockoutEndTime = null;
+    let lockoutCount = 0; // how many times locked out (for expanding penalty)
+    let lockoutTimer = null;
+    let countdownInterval = null;
+
     const scanLines = [
         'INITIALIZING SECURE CHANNEL...',
         'VERIFYING NODE INTEGRITY...',
@@ -635,6 +1152,23 @@ const accessUI = (() => {
         'MONITORING PERIMETER...',
     ];
     let scanIdx = 0;
+
+    // ── Persist lockout across page refreshes ──
+    function saveLockout() {
+        localStorage.setItem('MONLITH_LOCKOUT', JSON.stringify({ end: lockoutEndTime, count: lockoutCount }));
+    }
+    function loadLockout() {
+        try {
+            const d = JSON.parse(localStorage.getItem('MONLITH_LOCKOUT'));
+            if(d && d.end && Date.now() < d.end) {
+                lockoutEndTime = d.end;
+                lockoutCount = d.count || 1;
+                return true;
+            }
+            if(d && d.count) lockoutCount = d.count; // keep penalty count even after lockout expires
+        } catch(e) {}
+        return false;
+    }
 
     function clock() {
         const now = new Date();
@@ -658,17 +1192,16 @@ const accessUI = (() => {
     }
     cycleScan();
 
-    function updateDots(n, wrong) {
-        for(let i = 0; i < 3; i++) {
+    // dots now show REMAINING attempts, not typed chars
+    function updateAttemptDots(remaining, flash) {
+        for(let i = 0; i < MAX_ATTEMPTS; i++) {
             const d = document.getElementById('d'+i);
             d.className = 'dot';
-            if(i < n) d.classList.add(wrong ? 'wrong' : 'typed');
+            if(i < remaining) d.classList.add(flash ? 'wrong' : 'typed');
         }
     }
 
     function onType() {
-        const val = document.getElementById('pwInput').value;
-        updateDots(val.length, false);
         document.getElementById('accessError').textContent = '';
         document.getElementById('pwInput').classList.remove('error');
     }
@@ -679,13 +1212,84 @@ const accessUI = (() => {
         document.getElementById('eyeToggle').textContent = visible ? 'HIDE' : 'SHOW';
     }
 
+    function formatCountdown(ms) {
+        const totalSec = Math.ceil(ms / 1000);
+        const m = Math.floor(totalSec / 60);
+        const s = totalSec % 60;
+        return `${m}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function applyLockout() {
+        lockoutCount++;
+        // Each successive lockout doubles the penalty: 3min, 6min, 12min, 24min…
+        const duration = BASE_LOCKOUT_MS * Math.pow(2, lockoutCount - 1);
+        lockoutEndTime = Date.now() + duration;
+        saveLockout();
+        attempts = MAX_ATTEMPTS; // reset attempts counter for next round
+        activateLockoutUI();
+    }
+
+    function activateLockoutUI() {
+        const input = document.getElementById('pwInput');
+        const btn = document.querySelector('.access-btn');
+        const errEl = document.getElementById('accessError');
+
+        input.disabled = true;
+        input.value = '';
+        btn.disabled = true;
+        btn.textContent = '⬡ ACCESS SUSPENDED';
+        errEl.style.color = 'var(--red)';
+
+        updateAttemptDots(0, true);
+
+        if(countdownInterval) clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
+            const remaining = lockoutEndTime - Date.now();
+            if(remaining <= 0) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+                lockoutEndTime = null;
+                releaseLockout();
+                return;
+            }
+            const penalty = lockoutCount > 1 ? ` [PENALTY ×${Math.pow(2, lockoutCount-1)}]` : '';
+            errEl.textContent = `⛔ LOCKED OUT — ${formatCountdown(remaining)}${penalty}`;
+        }, 500);
+
+        // Fire once immediately
+        const remaining = lockoutEndTime - Date.now();
+        const penalty = lockoutCount > 1 ? ` [PENALTY ×${Math.pow(2, lockoutCount-1)}]` : '';
+        errEl.textContent = `⛔ LOCKED OUT — ${formatCountdown(remaining)}${penalty}`;
+    }
+
+    function releaseLockout() {
+        const input = document.getElementById('pwInput');
+        const btn = document.querySelector('.access-btn');
+        const errEl = document.getElementById('accessError');
+
+        input.disabled = false;
+        btn.disabled = false;
+        btn.textContent = '⬡ AUTHENTICATE';
+        errEl.style.color = 'var(--blue)';
+        errEl.textContent = 'SYSTEM RESTORED — PROCEED';
+        setTimeout(() => { errEl.textContent = ''; }, 2000);
+        updateAttemptDots(MAX_ATTEMPTS, false);
+        setTimeout(() => input.focus(), 100);
+    }
+
     function submit() {
+        // Block if locked out
+        if(lockoutEndTime && Date.now() < lockoutEndTime) return;
+
         const val = document.getElementById('pwInput').value.toUpperCase().trim();
+        if(val === '') return;
+
         if(val === PASSWORD) {
-            // Success
+            // ── SUCCESS ──
+            localStorage.removeItem('MONLITH_LOCKOUT');
             document.getElementById('accessError').style.color = 'var(--blue)';
             document.getElementById('accessError').textContent = '✓ ACCESS GRANTED';
-            updateDots(3, false);
+            updateAttemptDots(MAX_ATTEMPTS, false);
             const flash = document.getElementById('successFlash');
             flash.style.opacity = '1';
             setTimeout(() => { flash.style.opacity = '0'; }, 300);
@@ -699,23 +1303,43 @@ const accessUI = (() => {
                 }, 600);
             }, 700);
         } else {
+            // ── WRONG PASSWORD ──
             attempts--;
             document.getElementById('pwInput').classList.add('error');
-            updateDots(3, true);
             document.getElementById('accessError').style.color = 'var(--red)';
-            document.getElementById('accessError').textContent =
-                attempts > 0 ? `✗ INVALID KEY — ${attempts} ATTEMPT${attempts !== 1 ? 'S' : ''} REMAINING` : '✗ SYSTEM LOCKED — CONTACT SEALS';
+
             if(attempts <= 0) {
-                document.getElementById('pwInput').disabled = true;
-                document.querySelector('.access-btn').disabled = true;
-                document.querySelector('.access-btn').textContent = '⬡ SYSTEM LOCKED';
+                // Trigger lockout
+                updateAttemptDots(0, true);
+                setTimeout(() => {
+                    document.getElementById('pwInput').classList.remove('error');
+                    document.getElementById('pwInput').value = '';
+                    applyLockout();
+                }, 600);
+            } else {
+                // Show remaining attempts
+                updateAttemptDots(attempts, true);
+                document.getElementById('accessError').textContent =
+                    `✗ INVALID KEY — ${attempts} ATTEMPT${attempts !== 1 ? 'S' : ''} REMAINING`;
+                setTimeout(() => {
+                    document.getElementById('pwInput').classList.remove('error');
+                    document.getElementById('pwInput').value = '';
+                    updateAttemptDots(attempts, false);
+                }, 800);
             }
-            setTimeout(() => {
-                document.getElementById('pwInput').classList.remove('error');
-                document.getElementById('pwInput').value = '';
-                updateDots(0, false);
-            }, 800);
         }
+    }
+
+    // ── Init: check for a persisted lockout on page load ──
+    if(loadLockout()) {
+        // Start countdown as soon as DOM is ready
+        window.addEventListener('DOMContentLoaded', activateLockoutUI);
+        // Also fire immediately in case DOM is already ready
+        if(document.readyState !== 'loading') setTimeout(activateLockoutUI, 0);
+    } else {
+        // No lockout — show full dots (all attempts available)
+        window.addEventListener('DOMContentLoaded', () => updateAttemptDots(MAX_ATTEMPTS, false));
+        if(document.readyState !== 'loading') setTimeout(() => updateAttemptDots(MAX_ATTEMPTS, false), 0);
     }
 
     return { submit, onType, toggleVis };
@@ -770,9 +1394,35 @@ class MonlithEngine {
 
                 // TIER 5 — endgame, need all T4 branch
                 r13: { n: "NEXUS OMEGA",        tier: 5, branch: "omega",  cost: 5000,  bought: false, req: ["r10","r11","r12"], effect: "+10× EVERYTHING", mult: {pps: 10, click: 10, global: 10}, d: "The ultimate convergence of all research paths. Unlocks the true power of the Monlith." }
-            }
+            },
+            unlockedAch: [] // ids of unlocked achievements, persisted in save
         };
+        // ── ACHIEVEMENT DEFINITIONS ──
+        // Each has a `check(s)` predicate run against current state every render.
+        // Kept outside this.s since the definitions themselves aren't save data —
+        // only the unlocked id list (this.s.unlockedAch) is persisted.
+        this.achievements = [
+            { id: 'a1',  n: 'FIRST HARVEST',     d: 'Earn your first 100 coins.',                check: s => s.c >= 100 },
+            { id: 'a2',  n: 'GETTING SERIOUS',    d: 'Earn 100,000 coins.',                        check: s => s.c >= 100000 },
+            { id: 'a3',  n: 'MILLIONAIRE',        d: 'Earn 1,000,000 coins.',                      check: s => s.c >= 1000000 },
+            { id: 'a4',  n: 'BILLIONAIRE',        d: 'Earn 1,000,000,000 coins.',                  check: s => s.c >= 1000000000 },
+            { id: 'a5',  n: 'FIRST NODE',         d: 'Buy your first generator.',                  check: s => Object.values(s.upg).some(u => u.q >= 1) },
+            { id: 'a6',  n: 'COLLECTOR',          d: 'Own 50 total generators.',                   check: s => Object.values(s.upg).reduce((a,u)=>a+u.q,0) >= 50 },
+            { id: 'a7',  n: 'HOARDER',            d: 'Own 200 total generators.',                  check: s => Object.values(s.upg).reduce((a,u)=>a+u.q,0) >= 200 },
+            { id: 'a8',  n: 'MONLITH AWAKENED',   d: 'Own at least one THE MONLITH generator.',    check: s => (s.upg.m20?.q || 0) >= 1 },
+            { id: 'a9',  n: 'NEXUS UNLOCKED',     d: 'Unlock the Research Nexus.',                 check: s => s.resUnlocked },
+            { id: 'a10', n: 'RESEARCHER',         d: 'Buy 5 research upgrades.',                   check: s => Object.values(s.research).filter(r => r.bought).length >= 5 },
+            { id: 'a11', n: 'NEXUS OMEGA',        d: 'Unlock every research upgrade.',             check: s => Object.values(s.research).every(r => r.bought) },
+            { id: 'a12', n: 'FIRST ASCENSION',    d: 'Ascend for the first time.',                 check: s => s.shards >= 1 },
+            { id: 'a13', n: 'SHARD KEEPER',       d: 'Accumulate 25 shards.',                      check: s => s.shards >= 25 },
+            { id: 'a14', n: 'SHARD LORD',         d: 'Accumulate 100 shards.',                     check: s => s.shards >= 100 },
+            { id: 'a15', n: 'CLICK ADDICT',       d: 'Reach a ×10 click combo.',                   check: s => (this._maxCombo || 0) >= 10 },
+        ];
         this._loopStarted = false;
+        // Record true base costs once, before any purchases inflate u.c.
+        // Prestige resets toward these instead of compounding off whatever
+        // price a building had climbed to.
+        for(let u of Object.values(this.s.upg)) if(u.b === undefined) u.b = u.c;
         this.load();
     }
 
@@ -785,11 +1435,102 @@ class MonlithEngine {
         return n.toExponential(2);
     };
     updateScale(val) { this.s.scale = val / 50; this.render(); }
-    manualClick() {
+    manualClick(e) {
         let clickMult = 1;
         for(let r of Object.values(this.s.research)) if(r.bought && r.mult?.click) clickMult *= r.mult.click;
-        this.s.c += (this.s.clickPower * clickMult);
+        const gained = this.s.clickPower * clickMult;
+        this.s.c += gained;
         this.render();
+
+        // ── Combo system ──
+        const now = Date.now();
+        if(!this._combo) this._combo = { count: 0, last: 0, timer: null };
+        if(now - this._combo.last < 600) {
+            this._combo.count++;
+        } else {
+            this._combo.count = 1;
+        }
+        this._combo.last = now;
+        if(this._combo.count > (this._maxCombo || 0)) this._maxCombo = this._combo.count;
+        clearTimeout(this._combo.timer);
+        this._combo.timer = setTimeout(() => {
+            this._combo.count = 0;
+            const cd = document.getElementById('comboDisplay');
+            if(cd) { cd.style.opacity = '0'; }
+        }, 700);
+
+        const comboEl = document.getElementById('comboDisplay');
+        if(comboEl && this._combo.count > 1) {
+            comboEl.textContent = `⬡ COMBO ×${this._combo.count}`;
+            comboEl.style.opacity = '1';
+            comboEl.style.color = this._combo.count >= 10 ? '#a78bfa' : this._combo.count >= 5 ? '#34d399' : 'var(--blue)';
+        } else if(comboEl) {
+            comboEl.style.opacity = '0';
+        }
+
+        // ── Button pulse animation ──
+        const btn = document.getElementById('harvestBtn');
+        if(btn) {
+            btn.classList.remove('clicked');
+            void btn.offsetWidth; // reflow to restart animation
+            btn.classList.add('clicked');
+        }
+
+        // ── Floating coin pop ──
+        if(e) {
+            const pop = document.createElement('div');
+            pop.className = 'coin-pop';
+            pop.textContent = '+' + this.format(gained);
+            // Scatter slightly around click point
+            const scatter = (Math.random() - 0.5) * 40;
+            pop.style.left = (e.clientX + scatter) + 'px';
+            pop.style.top = (e.clientY - 10) + 'px';
+            pop.style.fontSize = this._combo.count >= 5 ? '1.2rem' : '0.95rem';
+            document.body.appendChild(pop);
+            setTimeout(() => pop.remove(), 800);
+
+            // ── Ripple at click point ──
+            const ripple = document.createElement('div');
+            ripple.className = 'harvest-ripple';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 520);
+        }
+
+        // ── Keyboard click SFX (embedded MP3 via Web Audio) ──
+        try {
+            if(!this._audioCtx) this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const ctx = this._audioCtx;
+            if(ctx.state === 'suspended') ctx.resume();
+
+            const playBuffer = () => {
+                const src = ctx.createBufferSource();
+                src.buffer = this._clickBuffer;
+                const gain = ctx.createGain();
+                gain.gain.value = 0.7;
+                src.connect(gain);
+                gain.connect(ctx.destination);
+                src.start();
+            };
+
+            if(this._clickBuffer) {
+                playBuffer();
+            } else if(!this._clickLoading) {
+                this._clickLoading = true;
+                this._decodeClickAudio(ctx, () => { this._clickLoading = false; playBuffer(); }, () => { this._clickLoading = false; });
+            }
+        } catch(_) {}
+    }
+    _decodeClickAudio(ctx, onSuccess, onError) {
+        const b64 = 'SUQzBAAAAAABSFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRYWFgAAAAYAAADY29tLmFuZHJvaWQudmVyc2lvbgAxNABUSVQyAAAAHAAAA05ldyBQcm9qZWN0IDEwMjYgW0MzRTY0QzNdAFRTU0UAAAAPAAADTGF2ZjU4LjM1LjEwMQAAAAAAAAAAAAAA//uUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAIAAANgAA4ODg4ODg4ODg4ODhVVVVVVVVVVVVVVVVxcXFxcXFxcXFxcXFxjo6Ojo6Ojo6Ojo6OqqqqqqqqqqqqqqqqqsfHx8fHx8fHx8fHx+Pj4+Pj4+Pj4+Pj4+P///////////////8AAAAATGF2YzU4LjY1AAAAAAAAAAAAAAAAAAAAAAAAAAAADYCYSqVTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//uUBAAACuAAaQAAAAAAAA0gAAAAAAABpAAAAAAAADSAAAAA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////uUBAAABkIAaQAAAAAAAA0gAAAACTzbAge9q4Enm2BA97Vw///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZnFzZH9PWed4/krasaaaPS+M4rPvW67raK7c4kel9b0580TUtSLsyaH/7s7s7e7//Wpbs7/SY+fEKsWAyWii9gqAUV7RUWX+LCrM4ubI/p6zzvH8lbVjTTR6XxnFZ963XdbRXbnEj0vrenPmialqRdmTQ//dndnb3f/61Ldnf6THz4hViwGS0UXsFQCivaKiy/xYV//uUBAAP8wYmy4HvalBSRNlwPe1KCpCTMgy96UFSEmZBl70oACwlY+DoOhgLg22pLdjjOCvaoryArJo+n8lYl3hWbFxjcwdNVi+cRUbpuy3qWeTrUt2egguhoPmbuJpPx5dRMmp6zK6TSpQJminwwz+ZId6/hj///////////////////ACwlY+DoOhgLg22pLdjjOCvaoryArJo+n8lYl3hWbFxjcwdNVi+cRUbpuy3qWeTrUt2egguhoPmbuJpPx5dRMmp6zK6TSpQJminwwz+ZId6/hgfyc+VvtOO1XoaeRP3OR691GhvsV3Nj2pGljbie8kGHP6Rtbng63iFeBnN85v8S6za1tW+cxZbgU0AjQYcC7rXoFGLUZ7WjhEtT360sbo3F6n1u/7B/Jz5W+047Vehp5E/c5Hr3UaG+xXc2PakaWNuJ7yQYc/pG1ueDreIV4Gc3zm/xLrNrW1b5zFluBTQCNBhwLutegUYtRntaOES1PfrSxujcXqfW7/s//uUBAAP8vYkzIMvelBRhJmQZe9KCrxvMge96UFXjeZA970oB4TqyWKyyfzktekTlIalesTx+/jt9n0sb2jwtQnr++rwcX+LeeLqC/3n79cbxi/1TGt5tjGpbTDWoDNzEiMWYHyE6hzn1oUn0U7KCLdRrroxX/////////////////weE6slissn85LXpE5SGpXrE8fv47fZ9LG9o8LUJ6/vq8HF/i3ni6gv95+/XG8Yv9UxrebYxqW0w1qAzcxIjFmB8hOoc59aFJ9FOygi3Ua66MVLAHQ8eq5qfqBbTzZGYWNfkZXLMGaeTW5YM79/HlzAj+0GNW986xfyWpT2k2XE4EBELB1AwJAYGXtYokMMObeYGOXAo4cKgx2LzSsu1tjMXiknoeS5V5YA6Hj1XNT9QLaebIzCxr8jK5ZgzTya3LBnfv48uYEf2gxq3vnWL+S1Ke0my4nAgIhYOoGBIDAy9rFEhhhzbzAxy4FHDhUGOxeaVl2tsZi8Uk9DyXKv//uUBAAAA2MyzQMvauBQplmgZe1cCfDtSge9q4k+HalA97VxBeFiD4IltfGXUl2kuRoLU9o/pFevq1ziDExHntim6xJ8v971K5sdW5otbKZPMzOs672v9STWem1Bn+tR5OqbtvP3HGQGhB9y9SYsrsuq9O1v////////////////////////////////////4LwsQfBEtr4y6ku0lyNBantH9Ir19WucQYmI89sU3WJPl/vepXNjq3NFrZTJ5mZ1nXe1/qSaz02oM/1qPJ1Tdt5+44yA0IPuXqTFldl1Xp2tOGmvvw7RM7b14uCcVK0soBHqB+rGt8wqvc0aDPFcnFbW1A/gSvnsY8ShfQTOLOGp8+aJoJqWkxo7UF1vXuya06C1XuyDoa33/9D0EDfpMPOGmvvw7RM7b14uCcVK0soBHqB+rGt8wqvc0aDPFcnFbW1A/gSvnsY8ShfQTOLOGp8+aJoJqWkxo7UF1vXuya06C1XuyDoa33/9D0EDfpMP//uUBAAAAxEh2QGvelBSpDsgNe9KCnUFTgw9q4lOoKnBh7VxQX0mSMTFqXz+XLcb5uHukTcN9SK+IzKE8jyQ0/jdL8dKubWqA/ZHN07ivoMHF4k809bQpYEOm9Rpq2g4NCYXBY0aEwqCwLGjaBX/q3qaEBZYsLf///////////////////+gvpMkYmLUvn8uW43zcPdIm4b6kV8RmUJ5Hkhp/G6X46Vc2tUB+yObp3FfQYOLxJ5p62hSwIdN6jTVtBwaEwuCxo0JhUFgWNG0Cv/VvU0ICyxYWGRy6lx1apaX7ESmNWalKaJfT9JonjYPJxohouJ9x0JO4yTeV50xfCfK1gfUjImSZokumtbInHPu6KNlO3qSR16lJtd7rdq61V//37fvSUmapGkiwyOXUuOrVLS/YiUxqzUpTRL6fpNE8bB5ONENFxPuOhJ3GSbyvOmL4T5WsD6kZEyTNEl01rZE4593RRsp29SSOvUpNrvdbtXWqv/+/b96SkzVI0kW//uUBAAHcxlAUYMPauJRKAowYe1cSnx3QAw96UlPjugBh70pATmhYZ3N3uZSqAoqlni6KAxx8i5FiELJ45k4eCvHHIf6fhF9ZEPgwcMjnLCc9Sn3SqmZm6K0kaaSNFz//6vq1ezarpX3ob1spDdatnp5msETf///////////////////////gJzQsM7m73MpVAUVSzxdFAY4+RcixCFk8cycPBXjjkP9Pwi+siHwYOGRzlhOepT7pVTMzdFaSNNJGi5//9X1avZtV0r70N62UhutWz08zWCJgXDs9buY43KstfDcLgmVA1ngVzwHOOErhbyGK8mQx9k5KsTd9HUx1J9iZNsEmq71/R5ubeMxqzeEBt/UW18L/sL3z3cxHaq5/vhZ/Y1x3R00PvwbguHZ63cxxuVZa+G4XBMqBrPArngOccJXC3kMV5Mhj7JyVYm76OpjqT7EybYJNV3r+jzc28ZjVm8IDb+otr4X/YXvnu5iO1Vz/fCz+xrjujpoffg3//uUBAAAA0sdzwHvelJUI7ngPe9KSeiHUge96UE9EOpA970oOE0LTTTuEaMxmSbsRdk5VwtSlYzROk8iXCZj9E+PxmbUGhMzGktqtSvoaotVqne6c5qQNyxJPB1N8knMuW1/2far3qrI4VuX/7CVAz9q3aK7k7+nf///////////////////////////5wmhaaadwjRmMyTdiLsnKuFqUrGaJ0nkS4TMfonx+Mzag0JmY0ltVqV9DVFqtU73TnNSBuWJJ4Opvkk5ly2v+z7Ve9VZHCty//YSoGftW7RXcnf05T1xSA8iSv9RdMCcUDxFnWcC+n0Pfx5WpDDrV8N/Hu8eUfx7w48ffpDhx7+jyJEvf0gPGSJl48ePCh96TgICD6f/wQU8Tww8Pl8v/5xU+J1PXFIDyJK/1F0wJxQPEWdZwL6fQ9/HlakMOtXw38e7x5R/HvDjx9+kOHHv6PIkS9/SA8ZImXjx48KH3pOAgIPp//BBTxPDDw+Xy//nFT4n';
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        ctx.decodeAudioData(bytes.buffer, (buffer) => {
+            this._clickBuffer = buffer;
+            onSuccess();
+        }, onError);
     }
     calcPPS = () => {
         let base = Object.values(this.s.upg).reduce((a, u) => a + (u.q * u.p), 0);
@@ -799,10 +1540,10 @@ class MonlithEngine {
             if(r.mult?.pps)    ppsMult    *= r.mult.pps;
             if(r.mult?.global) globalMult *= r.mult.global;
         }
-        return base * ppsMult * globalMult * (1 + this.s.shards) * this.s.scale;
+        return base * ppsMult * globalMult * Math.pow(2, this.s.shards) * this.s.scale;
     };
     
-    unlockResearch() { if(this.s.c >= 1000000) { this.s.c -= 1000000; this.s.resUnlocked = true; this.render(); } }
+    unlockResearch() { if(this.s.c >= 100000) { this.s.c -= 100000; this.s.resUnlocked = true; this.render(); } }
     canBuyResearch(id) {
         const r = this.s.research[id];
         if(r.bought) return false;
@@ -819,24 +1560,78 @@ class MonlithEngine {
     buy(id) { let u = this.s.upg[id]; if(this.s.c >= u.c) { this.s.c -= u.c; u.q++; u.c = Math.floor(u.c * 1.5); this.render(); } }
 
     prestige() {
-        if(this.s.c >= 10000000) { 
-            this.s.shards += Math.floor(Math.sqrt(this.s.c / 10000000));
-            this.s.c = 0; Object.values(this.s.upg).forEach(u => { u.q = 0; u.c = Math.floor(u.c * 0.4); });
-            this.s.dataPoints += Math.floor(this.s.shards / 10);
+        if(this.s.c >= 1000000) { 
+            this.s.shards += Math.floor(Math.sqrt(this.s.c / 1000000));
+            this.s.c = 0; Object.values(this.s.upg).forEach(u => { u.q = 0; u.c = u.b; });
+            this.s.dataPoints += Math.floor(this.s.shards / 2);
             this.render();
         }
     }
 
+    // ── ACHIEVEMENTS ──
+    checkAchievements() {
+        for(const a of this.achievements) {
+            if(this.s.unlockedAch.includes(a.id)) continue;
+            let earned = false;
+            try { earned = !!a.check(this.s); } catch(e) { earned = false; }
+            if(earned) {
+                this.s.unlockedAch.push(a.id);
+                this._showAchToast(a);
+            }
+        }
+        this.renderAchievements();
+    }
+
+    _showAchToast(a) {
+        let toast = document.getElementById('achToast');
+        if(!toast) {
+            toast = document.createElement('div');
+            toast.id = 'achToast';
+            document.body.appendChild(toast);
+        }
+        const card = document.createElement('div');
+        card.className = 'ach-toast-card';
+        card.innerHTML = `
+            <div class="ach-toast-label">⬡ ACHIEVEMENT UNLOCKED</div>
+            <div class="ach-toast-name">${a.n}</div>
+            <div class="ach-toast-desc">${a.d}</div>`;
+        toast.appendChild(card);
+        requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'translateX(0)'; });
+        setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(20px)';
+            setTimeout(() => card.remove(), 400);
+        }, 4500);
+    }
+
+    renderAchievements() {
+        const list = document.getElementById('achList');
+        if(!list) return;
+        const unlockedCount = this.s.unlockedAch.length;
+        const totalCount = this.achievements.length;
+        const counter = document.getElementById('achCounter');
+        if(counter) counter.textContent = `${unlockedCount} / ${totalCount}`;
+        list.innerHTML = this.achievements.map(a => {
+            const unlocked = this.s.unlockedAch.includes(a.id);
+            return `
+              <div class="ach-card ${unlocked ? 'ach-unlocked' : 'ach-locked'}">
+                <span class="ach-name">${unlocked ? '⬡' : '🔒'} ${a.n}</span>
+                <div class="ach-desc">${a.d}</div>
+              </div>`;
+        }).join('');
+    }
+
     render() {
-        document.getElementById('cDisp').innerText = this.format(this.s.c);
+        document.getElementById('cDisp').innerText = this.format(this.s.c) + ' coins';
         document.getElementById('ppsDisplay').innerText = "PPS: " + this.format(this.calcPPS());
+        this.checkAchievements();
         // ── Nexus unlock widget ──
         const unlockDiv = document.getElementById('unlockRes');
         if(this.s.resUnlocked) {
             unlockDiv.style.display = 'none';
         } else {
             unlockDiv.style.display = 'block';
-            const target = 1000000;
+            const target = 100000;
             const pct = Math.min(this.s.c / target * 100, 100);
             const canUnlock = this.s.c >= target;
             document.getElementById('nexusBar').style.width = pct.toFixed(1) + '%';
@@ -862,9 +1657,11 @@ class MonlithEngine {
         }
         
         let ascendBtn = document.getElementById('realAscendBtn');
-        let canAscend = this.s.c >= 10000000;
+        let canAscend = this.s.c >= 1000000;
         ascendBtn.disabled = !canAscend;
-        document.getElementById('ascendReq').innerText = canAscend ? "READY TO ASCEND" : `REQ: ${this.format(10000000 - this.s.c)} MORE`;
+        document.getElementById('ascendReq').innerText = canAscend ? "READY TO ASCEND" : `REQ: ${this.format(1000000 - this.s.c)} MORE`;
+        const shardEl = document.getElementById('shardDisplay');
+        if(shardEl) shardEl.textContent = `⬡ SHARDS: ${this.format(this.s.shards)}`;
 
         // ── Upgrades: build once, then patch only changed text nodes ──
         const list = document.getElementById('upgList');
@@ -877,7 +1674,7 @@ class MonlithEngine {
                 let u = this.s.upg[id];
                 const btn = document.createElement('button');
                 btn.className = 'btn-action';
-                btn.onclick = () => MONLITH.buy(id);
+                btn.onclick = () => { btnClick(btn); MONLITH.buy(id); };
                 btn.innerHTML = `
                     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
                         <span style="font-weight:600;letter-spacing:1px;">${u.n} <span class="upg-qty" style="opacity:0.5;font-weight:400;">(${u.q})</span></span>
@@ -962,7 +1759,7 @@ class MonlithEngine {
                             <div class="rt-effect" style="font-size:0.68rem;color:${b.color};margin-bottom:6px;font-family:'Share Tech Mono',monospace;"></div>
                             <div style="font-size:0.65rem;opacity:0.35;line-height:1.4;margin-bottom:8px;">${r.d}</div>
                             <div class="rt-status" style="font-size:0.65rem;font-family:'Share Tech Mono',monospace;letter-spacing:1px;"></div>`;
-                        card.onclick = () => MONLITH.buyResearch(id);
+                        card.onclick = () => { btnClick(card); MONLITH.buyResearch(id); };
                         cols.appendChild(card);
                     }
                     tierRow.appendChild(cols);
@@ -1002,7 +1799,7 @@ class MonlithEngine {
                         <div style="font-size:0.7rem;opacity:0.4;line-height:1.5;margin-bottom:10px;">${r.d}</div>
                         <div style="font-size:0.65rem;opacity:0.3;font-family:'Share Tech Mono',monospace;margin-bottom:8px;">REQUIRES: ALL TIER 4 RESEARCH</div>
                         <div class="rt-status" style="font-size:0.7rem;font-family:'Share Tech Mono',monospace;letter-spacing:1px;"></div>`;
-                    card.onclick = () => MONLITH.buyResearch(id);
+                    card.onclick = () => { btnClick(card); MONLITH.buyResearch(id); };
                     area.appendChild(card);
                 }
             }
@@ -1068,7 +1865,7 @@ class MonlithEngine {
         let d = localStorage.getItem('MONLITH_DATA');
         if(!d) return;
         let saved = JSON.parse(d);
-        for(let k of ['c','shards','resUnlocked','dataPoints','clickPower','scale'])
+        for(let k of ['c','shards','resUnlocked','dataPoints','clickPower','scale','unlockedAch'])
             if(saved[k] !== undefined) this.s[k] = saved[k];
         if(saved.upg) for(let id in saved.upg) if(this.s.upg[id]) Object.assign(this.s.upg[id], saved.upg[id]);
         if(saved.research) for(let id in saved.research) if(this.s.research[id]) Object.assign(this.s.research[id], saved.research[id]);
@@ -1110,20 +1907,80 @@ class MonlithEngine {
         const val = document.getElementById('resetConfirmInput').value.toUpperCase().trim();
         if(val !== 'CONFIRM') return;
         localStorage.removeItem('MONLITH_DATA');
+        localStorage.removeItem('MONLITH_LOCKOUT');
+        localStorage.removeItem('MONLITH_TAMPER');
         location.reload();
     }
     exportSave() {
-        const encoded = btoa(JSON.stringify(this.s));
+      try {
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(this.s))));
         const msg = document.getElementById('saveStatusMsg');
-        navigator.clipboard.writeText(encoded).then(() => {
-            if(msg) { msg.textContent = '✓ COPIED TO CLIPBOARD'; msg.style.color = 'rgba(0,242,255,0.8)'; }
-            setTimeout(() => {
-                const now = new Date();
-                if(msg) { msg.textContent = `LAST SAVED: ${now.toTimeString().slice(0,8)}`; msg.style.color = 'rgba(0,242,255,0.5)'; }
-            }, 2000);
-        }).catch(() => {
-            prompt('Copy this save string:', encoded);
-        });
+
+        // Always show the modal with the save string
+        let modal = document.getElementById('exportModal');
+        if(!modal) {
+            modal = document.createElement('div');
+            modal.id = 'exportModal';
+            modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(5,8,12,0.88);backdrop-filter:blur(8px);z-index:9000;align-items:center;justify-content:center;';
+            modal.innerHTML = `
+              <div style="background:#0a1018;border:1px solid rgba(0,242,255,0.3);padding:40px;width:480px;max-width:calc(100vw - 32px);position:relative;font-family:'Share Tech Mono',monospace;box-sizing:border-box;">
+                <div style="position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--blue);border-left:2px solid var(--blue);"></div>
+                <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--blue);border-right:2px solid var(--blue);"></div>
+                <div style="font-size:0.6rem;letter-spacing:4px;color:rgba(0,242,255,0.5);margin-bottom:16px;">&#x2B21; EXPORT SAVE DATA</div>
+                <div style="font-size:0.75rem;color:rgba(224,233,240,0.4);line-height:1.6;margin-bottom:14px;">Your save string is below. Hit COPY or select all and copy manually.</div>
+                <textarea id="exportOutput" readonly
+                    style="width:100%;height:90px;background:rgba(0,242,255,0.03);border:1px solid rgba(0,242,255,0.2);border-bottom:2px solid rgba(0,242,255,0.4);color:var(--blue);font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:1px;padding:12px;outline:none;resize:none;box-sizing:border-box;margin-bottom:14px;word-break:break-all;-webkit-user-select:text;user-select:text;"></textarea>
+                <div style="display:flex;gap:12px;">
+                  <button id="exportCopyBtn"
+                    style="flex:1;background:transparent;border:1px solid rgba(0,242,255,0.4);color:var(--blue);font-family:'Share Tech Mono',monospace;font-size:0.75rem;letter-spacing:2px;padding:14px;cursor:pointer;transition:all 0.2s;"
+                    onmouseover="this.style.background='rgba(0,242,255,0.08)'" onmouseout="this.style.background='transparent'">
+                    COPY
+                  </button>
+                  <button onclick="document.getElementById('exportModal').style.display='none';"
+                    style="flex:1;background:transparent;border:1px solid rgba(224,233,240,0.15);color:rgba(224,233,240,0.4);font-family:'Share Tech Mono',monospace;font-size:0.75rem;letter-spacing:2px;padding:14px;cursor:pointer;transition:all 0.2s;"
+                    onmouseover="this.style.borderColor='rgba(224,233,240,0.4)';this.style.color='rgba(224,233,240,0.7)'" onmouseout="this.style.borderColor='rgba(224,233,240,0.15)';this.style.color='rgba(224,233,240,0.4)'">
+                    CLOSE
+                  </button>
+                </div>
+              </div>`;
+            document.body.appendChild(modal);
+            document.getElementById('exportCopyBtn').addEventListener('click', () => {
+                const btn = document.getElementById('exportCopyBtn');
+                const ta = document.getElementById('exportOutput');
+                // Try modern clipboard API first, fall back to execCommand
+                const markCopied = () => {
+                    btn.textContent = '\u2713 COPIED';
+                    if(msg) { msg.textContent = '\u2713 COPIED TO CLIPBOARD'; msg.style.color = 'rgba(0,242,255,0.8)'; }
+                    setTimeout(() => {
+                        btn.textContent = 'COPY';
+                        if(msg) { msg.textContent = '\u2B21 SAVE STRING READY'; msg.style.color = 'rgba(0,242,255,0.6)'; }
+                    }, 2000);
+                };
+                if(navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(ta.value).then(markCopied).catch(() => {
+                        ta.select(); try { document.execCommand('copy'); } catch(e) {}
+                        markCopied();
+                    });
+                } else {
+                    ta.select(); try { document.execCommand('copy'); } catch(e) {}
+                    markCopied();
+                }
+            });
+        }
+        document.getElementById('exportOutput').value = encoded;
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            const ta = document.getElementById('exportOutput');
+            ta.focus();
+            ta.select();
+        }, 80);
+        if(msg) { msg.textContent = '\u2B21 SAVE STRING READY'; msg.style.color = 'rgba(0,242,255,0.6)'; }
+      } catch(err) {
+        console.error('exportSave failed:', err);
+        const msg = document.getElementById('saveStatusMsg');
+        if(msg) { msg.textContent = 'EXPORT FAILED: ' + (err && err.message ? err.message : err); msg.style.color = 'var(--red)'; }
+        alert('Export failed: ' + (err && err.message ? err.message : err));
+      }
     }
     showImport() {
         document.getElementById('importModal').style.display = 'flex';
@@ -1137,7 +1994,7 @@ class MonlithEngine {
     executeImport() {
         const raw = document.getElementById('importInput').value.trim();
         try {
-            const parsed = JSON.parse(atob(raw));
+            const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
             // Validate it looks like a real save
             if(typeof parsed.c !== 'number' || !parsed.upg) throw new Error('bad save');
             localStorage.setItem('MONLITH_DATA', JSON.stringify(parsed));
@@ -1154,9 +2011,587 @@ class MonlithEngine {
         this._loopStarted = true;
         this.render();
         setInterval(() => { this.s.c += (this.calcPPS() / 10); this.render(); this.save(); }, 100);
+        // Pre-load click audio so it's ready for all buttons immediately
+        setTimeout(() => { try { this._preloadAudio(); } catch(_) {} }, 500);
+    }
+
+    _preloadAudio() {
+        if(this._clickBuffer || this._clickLoading) return;
+        if(!this._audioCtx) this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const ctx = this._audioCtx;
+        this._clickLoading = true;
+        this._decodeClickAudio(ctx, () => { this._clickLoading = false; }, () => { this._clickLoading = false; });
     }
 }
 const MONLITH = new MonlithEngine();
+
+// ── Button click pulse + sound helper ──
+function btnClick(el) {
+    if(!el) return;
+    el.classList.remove('clicked');
+    void el.offsetWidth; // reflow to restart animation
+    el.classList.add('clicked');
+    // Play the same click SFX as the harvest button, sharing MONLITH's decoded buffer
+    try {
+        if(!MONLITH._audioCtx) MONLITH._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const ctx = MONLITH._audioCtx;
+        if(ctx.state === 'suspended') ctx.resume();
+        const playBuffer = () => {
+            const src = ctx.createBufferSource();
+            src.buffer = MONLITH._clickBuffer;
+            const gain = ctx.createGain();
+            gain.gain.value = 0.5;
+            src.connect(gain);
+            gain.connect(ctx.destination);
+            src.start();
+        };
+        if(MONLITH._clickBuffer) {
+            playBuffer();
+        } else if(!MONLITH._clickLoading) {
+            MONLITH._clickLoading = true;
+            MONLITH._decodeClickAudio(ctx, () => { MONLITH._clickLoading = false; playBuffer(); }, () => { MONLITH._clickLoading = false; });
+        }
+    } catch(_) {}
+}
+
+/* ══════════════════════════════════════════════════════
+   ADDICTIVE SYSTEMS — Streak / Surge / Crits / Drops / Milestones
+   ══════════════════════════════════════════════════════ */
+
+/* ─── DAILY LOGIN STREAK ─── */
+(function initStreak() {
+    try {
+        const KEY = 'MONLITH_STREAK';
+        const data = JSON.parse(localStorage.getItem(KEY) || '{}');
+        const now = Date.now();
+        const DAY = 86400000;
+        let streak = data.streak || 0;
+        let lastVisit = data.lastVisit || 0;
+        const gap = now - lastVisit;
+        const isNewDay = gap > DAY || lastVisit === 0;
+
+        // Update streak count
+        if (lastVisit === 0) {
+            streak = 1;
+        } else if (gap > DAY * 2) {
+            streak = 1; // broke streak
+        } else if (gap > DAY) {
+            streak += 1; // new day
+        }
+
+        // Save updated streak
+        localStorage.setItem(KEY, JSON.stringify({ streak, lastVisit: now }));
+
+        // Only show and grant bonus on a new day visit — skip entirely if already claimed today
+        if (!isNewDay) return;
+
+        const bonus = Math.min(streak * 500, 50000);
+
+        function showStreakModal() {
+            const mainApp = document.getElementById('mainApp');
+            if (!mainApp || !mainApp.classList.contains('visible')) {
+                setTimeout(showStreakModal, 400);
+                return;
+            }
+
+            MONLITH.s.c += bonus;
+            MONLITH.render();
+
+            const banner = document.getElementById('streakBanner');
+            if (!banner) return;
+
+            const flames = streak >= 7 ? '🔥🔥🔥' : streak >= 3 ? '🔥🔥' : '🔥';
+            const broke = lastVisit !== 0 && gap > DAY * 2;
+
+            const flamesEl = document.getElementById('streakFlames');
+            const dayEl = document.getElementById('streakDayText');
+            const bonusEl = document.getElementById('streakBonusText');
+            const msgEl = document.getElementById('streakMsg');
+
+            if (flamesEl) flamesEl.textContent = flames;
+            if (dayEl) dayEl.textContent = 'DAY ' + streak + ' STREAK';
+            if (bonusEl) bonusEl.textContent = '+ ' + bonus.toLocaleString() + ' COINS GRANTED';
+            if (msgEl) msgEl.textContent = broke
+                ? 'YOUR STREAK WAS RESET — BUILD IT BACK UP'
+                : streak >= 7 ? 'ELITE OPERATOR — STREAK BONUS MAXIMISED'
+                : streak >= 3 ? 'CONSISTENCY DETECTED — BONUS INCREASING'
+                : 'WELCOME BACK — RETURN DAILY TO GROW YOUR STREAK';
+
+            banner.classList.add('show');
+        }
+
+        setTimeout(showStreakModal, 300);
+
+    } catch(e) {}
+})();
+
+/* ─── DATA SURGE EVENT ─── */
+(function initSurge() {
+    const SURGE_MULT = 3;
+    const SURGE_DURATION = 30000; // 30s
+    const SURGE_MIN_INTERVAL = 90000;  // 90s
+    const SURGE_MAX_INTERVAL = 210000; // 3.5min
+
+    let surgeActive = false;
+
+    function startSurge() {
+        if (surgeActive || typeof MONLITH === 'undefined') return;
+        surgeActive = true;
+
+        // Flash announcement
+        const ann = document.getElementById('surgeAnnounce');
+        if (ann) {
+            ann.classList.add('pop');
+            setTimeout(() => ann.classList.remove('pop'), 2000);
+        }
+
+        setTimeout(() => {
+            const overlay = document.getElementById('surgeOverlay');
+            if (overlay) overlay.classList.add('active');
+
+            // Patch calcPPS temporarily
+            const origCalc = MONLITH.calcPPS.bind(MONLITH);
+            MONLITH.calcPPS = () => origCalc() * SURGE_MULT;
+
+            const start = Date.now();
+            const iv = setInterval(() => {
+                const elapsed = Date.now() - start;
+                const rem = Math.max(0, SURGE_DURATION - elapsed);
+                const timerEl = document.getElementById('surgeTimer');
+                const fillEl = document.getElementById('surgeBarFill');
+                if (timerEl) timerEl.textContent = Math.ceil(rem / 1000);
+                if (fillEl) fillEl.style.width = ((rem / SURGE_DURATION) * 100) + '%';
+                if (rem <= 0) {
+                    clearInterval(iv);
+                    MONLITH.calcPPS = origCalc;
+                    surgeActive = false;
+                    if (overlay) overlay.classList.remove('active');
+                    scheduleNext();
+                }
+            }, 200);
+        }, 2200);
+    }
+
+    function scheduleNext() {
+        const delay = SURGE_MIN_INTERVAL + Math.random() * (SURGE_MAX_INTERVAL - SURGE_MIN_INTERVAL);
+        setTimeout(startSurge, delay);
+    }
+
+    // Wait for game start, then schedule first surge
+    const waitForGame = setInterval(() => {
+        if (document.getElementById('mainApp')?.classList.contains('visible')) {
+            clearInterval(waitForGame);
+            scheduleNext();
+        }
+    }, 1000);
+})();
+
+/* ─── CRITICAL CLICKS ─── */
+(function patchCrits() {
+    const waitForMonlith = setInterval(() => {
+        if (typeof MONLITH === 'undefined') return;
+        clearInterval(waitForMonlith);
+
+        const origClick = MONLITH.manualClick.bind(MONLITH);
+        MONLITH.manualClick = function(e) {
+            // Check for crit BEFORE calling original (so we can intercept the coin gain)
+            const critChance = 0.08 + Math.min((MONLITH.s.shards || 0) * 0.005, 0.12); // 8-20%
+            const isCrit = Math.random() < critChance;
+            if (isCrit) {
+                const critMult = 5 + Math.floor(Math.random() * 6); // ×5–×10
+                let clickMult = 1;
+                for (let r of Object.values(MONLITH.s.research)) if (r.bought && r.mult?.click) clickMult *= r.mult.click;
+                const bonus = MONLITH.s.clickPower * clickMult * (critMult - 1);
+                MONLITH.s.c += bonus;
+
+                // Crit label — support both mouse and touch coordinates
+                const div = document.createElement('div');
+                div.className = 'crit-pop';
+                div.textContent = '⚡ CRIT ×' + critMult + '!';
+                let cx, cy;
+                if (e && e.touches && e.touches[0]) {
+                    cx = e.touches[0].clientX; cy = e.touches[0].clientY;
+                } else if (e && e.clientX !== undefined) {
+                    cx = e.clientX; cy = e.clientY;
+                }
+                if (cx !== undefined) { div.style.left = (cx - 40) + 'px'; div.style.top = (cy - 30) + 'px'; }
+                else { div.style.left = '44%'; div.style.top = '45%'; }
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 1200);
+            }
+            origClick(e);
+        };
+    }, 300);
+})();
+
+/* ─── LUCKY DROPS ─── */
+(function initLuckyDrops() {
+    const DROP_EMOJIS = ['⬡', '◈', '⬟', '⬠'];
+    const MIN_INTERVAL = 25000;
+    const MAX_INTERVAL = 55000;
+
+    function spawnDrop() {
+        if (!document.getElementById('mainApp')?.classList.contains('visible')) {
+            scheduleNext(); return;
+        }
+        if (typeof MONLITH === 'undefined') { scheduleNext(); return; }
+
+        const el = document.createElement('div');
+        el.className = 'lucky-drop';
+        // On mobile panels stack full-width; on desktop constrain to left panel (~55vw)
+        const isMobile = window.innerWidth <= 1024;
+        const xMax = isMobile ? 80 : 48;
+        const xMin = isMobile ? 5 : 5;
+        const x = xMin + Math.random() * xMax;
+        const duration = 7000 + Math.random() * 4000;
+        el.style.left = x + 'vw';
+        el.style.animationDuration = duration + 'ms';
+        el.textContent = DROP_EMOJIS[Math.floor(Math.random() * DROP_EMOJIS.length)];
+
+        const reward = Math.floor(MONLITH.calcPPS() * (3 + Math.random() * 7));
+        el.title = '+' + reward.toLocaleString() + ' coins';
+
+        function collectDrop(evt) {
+            if (evt) evt.preventDefault();
+            MONLITH.s.c += reward;
+            MONLITH.render();
+            const rect = el.getBoundingClientRect();
+            const burst = document.createElement('div');
+            burst.className = 'crit-pop';
+            burst.style.cssText = 'left:' + (rect.left - 30) + 'px;top:' + rect.top + 'px;color:#34d399;font-size:0.85rem;';
+            burst.textContent = '+' + (reward > 1e6 ? (reward/1e6).toFixed(1)+'M' : reward > 1e3 ? (reward/1e3).toFixed(1)+'K' : reward) + ' COINS';
+            document.body.appendChild(burst);
+            setTimeout(() => burst.remove(), 1100);
+            el.remove();
+        }
+
+        el.addEventListener('click', collectDrop);
+        el.addEventListener('touchstart', collectDrop, { passive: false });
+
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), duration + 100);
+        scheduleNext();
+    }
+
+    function scheduleNext() {
+        const d = MIN_INTERVAL + Math.random() * (MAX_INTERVAL - MIN_INTERVAL);
+        setTimeout(spawnDrop, d);
+    }
+
+    const waitForGame = setInterval(() => {
+        if (document.getElementById('mainApp')?.classList.contains('visible')) {
+            clearInterval(waitForGame);
+            setTimeout(spawnDrop, 15000); // first drop 15s after login
+        }
+    }, 1000);
+})();
+
+/* ─── MILESTONE TRACKER ─── */
+(function initMilestones() {
+    const milestones = [
+        { label: 'FIRST NODE', check: s => Object.values(s.upg).some(u=>u.q>=1), progress: s => Object.values(s.upg).reduce((a,u)=>a+u.q,0) / 1, target: 1 },
+        { label: 'UNLOCK NEXUS', check: s => s.resUnlocked, progress: s => Math.min(s.c, 100000) / 100000, target: 1 },
+        { label: 'ASCENSION READY', check: s => s.c >= 1000000, progress: s => Math.min(s.c, 1000000) / 1000000, target: 1 },
+        { label: '25 TOTAL GENERATORS', check: s => Object.values(s.upg).reduce((a,u)=>a+u.q,0) >= 25, progress: s => Math.min(Object.values(s.upg).reduce((a,u)=>a+u.q,0), 25) / 25, target: 25 },
+        { label: '5 RESEARCH BOUGHT', check: s => Object.values(s.research).filter(r=>r.bought).length >= 5, progress: s => Math.min(Object.values(s.research).filter(r=>r.bought).length, 5) / 5, target: 5 },
+        { label: '10 SHARDS', check: s => s.shards >= 10, progress: s => Math.min(s.shards, 10) / 10, target: 10 },
+        { label: '100 TOTAL GENERATORS', check: s => Object.values(s.upg).reduce((a,u)=>a+u.q,0) >= 100, progress: s => Math.min(Object.values(s.upg).reduce((a,u)=>a+u.q,0), 100) / 100, target: 100 },
+        { label: 'ALL RESEARCH COMPLETE', check: s => Object.values(s.research).every(r=>r.bought), progress: s => Object.values(s.research).filter(r=>r.bought).length / Object.keys(s.research).length, target: 1 },
+        { label: '1 BILLION COINS', check: s => s.c >= 1e9, progress: s => Math.min(s.c, 1e9) / 1e9, target: 1 },
+    ];
+
+    function updateMilestone() {
+        if (typeof MONLITH === 'undefined') return;
+        const s = MONLITH.s;
+        const next = milestones.find(m => !m.check(s));
+        const goal = document.getElementById('msGoalText');
+        const fill = document.getElementById('msBarFill');
+        const sub = document.getElementById('msSubText');
+        if (!goal || !fill || !sub) return;
+        if (!next) {
+            goal.textContent = '⬡ ALL GOALS COMPLETE';
+            fill.style.width = '100%';
+            sub.textContent = 'MAXIMUM NEXUS REACHED';
+            return;
+        }
+        const pct = Math.min(next.progress(s) * 100, 100);
+        goal.textContent = next.label;
+        fill.style.width = pct.toFixed(1) + '%';
+        sub.textContent = pct.toFixed(0) + '% COMPLETE';
+    }
+
+    setInterval(updateMilestone, 1000);
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   © SEALS SYSTEMS — MONLITH NEXUS PRO
+   All rights reserved. Unauthorised copying, modification,
+   reverse engineering, or redistribution of this software,
+   in whole or in part, is strictly prohibited.
+   Violations will be logged and pursued.
+   ══════════════════════════════════════════════════════════════ */
+const _SEALS_PROTECT = (() => {
+    'use strict';
+
+    // ── Copyright watermark in console (not hideable) ──
+    const _cw = [
+        '%c© SEALS SYSTEMS — MONLITH NEXUS PRO',
+        'color:#00f2ff;font-size:14px;font-weight:bold;font-family:monospace;',
+        '\n%cAll rights reserved. Unauthorised access, copying or reverse engineering is prohibited.',
+        'color:#ff4466;font-size:11px;font-family:monospace;',
+        '\n%cThis software is protected under applicable copyright law.',
+        'color:rgba(0,242,255,0.5);font-size:10px;font-family:monospace;'
+    ];
+    try { console.log(_cw[0], _cw[1], _cw[2], _cw[3], _cw[4], _cw[5]); } catch(e) {}
+
+    let _devOpen = false;
+    let _tamperResumeTime = null;
+    let _tamperCountdownIv = null;
+    const TAMPER_LOCK_MS = 30 * 1000; // 30s devtools lockout
+    const TAMPER_KEY = 'MONLITH_TAMPER';
+
+    // ── Persist tamper lockout across reloads ──
+    function _saveTamper() {
+        try { localStorage.setItem(TAMPER_KEY, String(_tamperResumeTime)); } catch(e) {}
+    }
+    function _loadTamper() {
+        try {
+            const v = parseInt(localStorage.getItem(TAMPER_KEY));
+            if(v && Date.now() < v) { _tamperResumeTime = v; return true; }
+            localStorage.removeItem(TAMPER_KEY);
+        } catch(e) {}
+        return false;
+    }
+
+    // ── Check on page load — restore overlay if lockout still active ──
+    if(_loadTamper()) {
+        window.addEventListener('DOMContentLoaded', () => _restoreOverlay());
+        if(document.readyState !== 'loading') setTimeout(_restoreOverlay, 0);
+    }
+
+    function _restoreOverlay() {
+        const overlay = document.getElementById('tamperOverlay');
+        if(!overlay) return;
+        overlay.classList.add('active');
+        // Also block the access screen input if still locked
+        const input = document.getElementById('pwInput');
+        const btn = document.querySelector('.access-btn');
+        if(input) input.disabled = true;
+        if(btn) { btn.disabled = true; btn.textContent = '⬡ SYSTEM LOCKED'; }
+        _startCountdown();
+    }
+
+    function _startCountdown() {
+        if(_tamperCountdownIv) clearInterval(_tamperCountdownIv);
+        const cd = document.getElementById('tamperCountdown');
+        _tamperCountdownIv = setInterval(() => {
+            const rem = Math.max(0, _tamperResumeTime - Date.now());
+            if(cd) cd.textContent = rem > 0
+                ? `SYSTEM RESTORE IN ${Math.ceil(rem / 1000)}s`
+                : 'ACCESS SUSPENDED — CLOSE AND REOPEN';
+            if(rem <= 0) {
+                clearInterval(_tamperCountdownIv);
+                try { localStorage.removeItem(TAMPER_KEY); } catch(e) {}
+                const overlay = document.getElementById('tamperOverlay');
+                if(overlay) overlay.classList.remove('active');
+                _tamperResumeTime = null;
+                // Restore input
+                const input = document.getElementById('pwInput');
+                const btn = document.querySelector('.access-btn');
+                if(input) input.disabled = false;
+                if(btn) { btn.disabled = false; btn.textContent = '⬡ AUTHENTICATE'; }
+            }
+        }, 500);
+    }
+
+    // ── Right-click disable ──
+    document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }, true);
+
+    // ── Keyboard shortcut blocking ──
+    document.addEventListener('keydown', e => {
+        const key = e.key ? e.key.toLowerCase() : '';
+        // F12
+        if(e.keyCode === 123) { e.preventDefault(); triggerTamper('F12 DEVTOOLS KEY'); return false; }
+        // Ctrl/Cmd + Shift + I/J/C/K (devtools)
+        if((e.ctrlKey || e.metaKey) && e.shiftKey && ['i','j','c','k'].includes(key)) {
+            e.preventDefault(); triggerTamper('DEVTOOLS SHORTCUT'); return false;
+        }
+        // Ctrl/Cmd + U (view source)
+        if((e.ctrlKey || e.metaKey) && key === 'u') {
+            e.preventDefault(); triggerTamper('VIEW SOURCE ATTEMPT'); return false;
+        }
+        // Ctrl/Cmd + S (save page)
+        if((e.ctrlKey || e.metaKey) && key === 's') {
+            e.preventDefault(); return false;
+        }
+        // Ctrl/Cmd + A (select all)
+        if((e.ctrlKey || e.metaKey) && key === 'a') {
+            e.preventDefault(); return false;
+        }
+        // Ctrl/Cmd + C (copy) — allow only inside inputs
+        if((e.ctrlKey || e.metaKey) && key === 'c') {
+            const tag = document.activeElement && document.activeElement.tagName;
+            if(tag !== 'INPUT' && tag !== 'TEXTAREA') {
+                e.preventDefault(); return false;
+            }
+        }
+        // Ctrl/Cmd + P (print)
+        if((e.ctrlKey || e.metaKey) && key === 'p') {
+            e.preventDefault(); return false;
+        }
+    }, true);
+
+    // ── Print block ──
+    window.addEventListener('beforeprint', e => {
+        e.preventDefault();
+        triggerTamper('PRINT / SCREENSHOT ATTEMPT');
+    });
+
+    // ── Drag disable (prevent drag-copy of content) ──
+    document.addEventListener('dragstart', e => e.preventDefault(), true);
+
+    // ── Selection clear on any text selection ──
+    document.addEventListener('selectstart', e => {
+        const tag = document.activeElement && document.activeElement.tagName;
+        if(tag !== 'INPUT' && tag !== 'TEXTAREA') e.preventDefault();
+    }, true);
+
+    // (Size-based devtools detection removed — too many false positives across browsers)
+
+    // Method 2: debugger timing trap
+    function _debuggerTrap() {
+        const t0 = performance.now();
+        // eslint-disable-next-line no-debugger
+        debugger;
+        const t1 = performance.now();
+        if(t1 - t0 > 100) {
+            triggerTamper('DEBUGGER PAUSE DETECTED');
+        }
+    }
+    setInterval(_debuggerTrap, 3000);
+
+    // Method 3: toString override detection
+    try {
+        let _toStringCounter = 0;
+        const _origToString = Function.prototype.toString;
+        Object.defineProperty(Function.prototype, 'toString', {
+            get() { _toStringCounter++; if(_toStringCounter > 5) triggerTamper('FUNCTION DECOMPILE DETECTED'); return _origToString; },
+            configurable: true
+        });
+    } catch(e) {}
+
+    // ── Owner bypass key ──
+    const TAMPER_BYPASS_KEY = 'SEALSFOUND';
+    function tamperBypass() {
+        const input = document.getElementById('tamperBypassInput');
+        const err = document.getElementById('tamperBypassErr');
+        const val = input ? input.value.trim() : '';
+        if(val !== TAMPER_BYPASS_KEY) {
+            if(err) {
+                err.textContent = 'INVALID OVERRIDE KEY';
+                err.style.color = 'rgba(255,68,102,0.8)';
+            }
+            if(input) {
+                input.style.borderColor = 'rgba(255,68,102,0.6)';
+                setTimeout(() => { input.style.borderColor = 'rgba(255,68,102,0.25)'; }, 600);
+            }
+            return;
+        }
+        // Valid key — fully lift the lockout
+        if(_tamperCountdownIv) clearInterval(_tamperCountdownIv);
+        _tamperResumeTime = null;
+        try { localStorage.removeItem(TAMPER_KEY); } catch(e) {}
+        const overlay = document.getElementById('tamperOverlay');
+        if(overlay) overlay.classList.remove('active');
+        const pwInput = document.getElementById('pwInput');
+        const btn = document.querySelector('.access-btn');
+        if(pwInput) pwInput.disabled = false;
+        if(btn) { btn.disabled = false; btn.textContent = '⬡ AUTHENTICATE'; }
+        if(input) input.value = '';
+        if(err) { err.textContent = ''; err.style.color = 'rgba(255,68,102,0)'; }
+    }
+    window.tamperBypass = tamperBypass;
+
+    // ── Tamper trigger ──
+    function triggerTamper(reason) {
+        if(_tamperResumeTime && Date.now() < _tamperResumeTime) return; // already locked
+        _tamperResumeTime = Date.now() + TAMPER_LOCK_MS;
+        _saveTamper();
+        const overlay = document.getElementById('tamperOverlay');
+        if(!overlay) return;
+        overlay.classList.add('active');
+        // Block access screen too
+        const input = document.getElementById('pwInput');
+        const btn = document.querySelector('.access-btn');
+        if(input) input.disabled = true;
+        if(btn) { btn.disabled = true; btn.textContent = '⬡ SYSTEM LOCKED'; }
+
+        // Log incident
+        try {
+            console.log(
+                '%c[SEALS SECURITY] Incident: ' + reason + ' @ ' + new Date().toISOString(),
+                'color:#ff4466;font-weight:bold;font-family:monospace;font-size:12px;'
+            );
+        } catch(e) {}
+
+        // ── Discord webhook alert ──
+        try {
+            const _ts = new Date().toISOString();
+            const _payload = {
+                username: 'MONLITH SECURITY',
+                avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+                embeds: [{
+                    title: '⚠️ SECURITY BREACH DETECTED',
+                    color: 0xff4466,
+                    fields: [
+                        { name: '🔍 Incident', value: reason, inline: true },
+                        { name: '🕐 Timestamp', value: _ts, inline: true },
+                        { name: '🌐 Page', value: window.location.href || 'unknown', inline: false },
+                        { name: '🖥️ User Agent', value: navigator.userAgent || 'unknown', inline: false },
+                        { name: '📐 Screen', value: `${screen.width}x${screen.height} — window ${window.innerWidth}x${window.innerHeight}`, inline: false },
+                        { name: '🌍 Language', value: navigator.language || 'unknown', inline: true },
+                        { name: '⏱️ Time on page', value: Math.round(performance.now() / 1000) + 's', inline: true },
+                    ],
+                    footer: { text: '© SEALS SYSTEMS — MONLITH NEXUS PRO' },
+                    timestamp: _ts
+                }]
+            };
+            fetch('https://discord.com/api/webhooks/1516997395630657666/qmsrfU5o9WwpcOF6dsPi2Q1oKs4SsRf09tV5XpxgghQoW6beAAhbu6mjam6sB0IttxlO', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(_payload)
+            }).catch(() => {});
+        } catch(e) {}
+
+        // Discord webhook + console log (see above)
+
+        // ── Start persistent countdown ──
+        _startCountdown();
+    }
+
+    // ── Integrity check: warn if script tags have been modified ──
+    window.addEventListener('load', () => {
+        const scripts = document.querySelectorAll('script');
+        if(scripts.length === 0) triggerTamper('SCRIPT INTEGRITY FAILURE');
+    });
+
+    // ── Console clear trap: re-stamp copyright after any console.clear() ──
+    try {
+        const _origClear = typeof console.clear === 'function'
+            ? console.clear.bind(console)
+            : () => {};
+        console.clear = function() {
+            try { _origClear(); } catch(e) {}
+            try { console.log(_cw[0], _cw[1], _cw[2], _cw[3], _cw[4], _cw[5]); } catch(e) {}
+        };
+    } catch(e) {}
+
+    return { version: '1.0', owner: 'SEALS SYSTEMS' };
+})();
 </script>
 </body>
 </html>
