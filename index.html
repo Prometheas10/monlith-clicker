@@ -143,7 +143,7 @@
             0%   { top: -50px; opacity: 0; }
             8%   { opacity: 1; }
             80%  { opacity: 1; }
-            100% { top: calc(100vh - 380px); opacity: 0; }
+            100% { top: var(--drop-stop, calc(100vh - 380px)); opacity: 0; }
         }
 
         /* ─── MILESTONE BAR (bottom of right panel) ─── */
@@ -705,16 +705,6 @@
                 letter-spacing: 3px;
                 width: 90vw;
                 text-align: center;
-            }
-        }
-
-        /* Lucky drops — on mobile stop higher to clear stacked controls */
-        @media (max-width: 1024px) {
-            @keyframes dropFall {
-                0%   { top: -50px; opacity: 0; }
-                8%   { opacity: 1; }
-                80%  { opacity: 1; }
-                100% { top: calc(100vh - 160px); opacity: 0; }
             }
         }
 
@@ -1498,13 +1488,15 @@ class MonlithEngine {
             setTimeout(() => ripple.remove(), 520);
         }
 
-        // ── Keyboard click SFX (embedded MP3 via Web Audio) ──
+        // ── Click SFX — resume context synchronously inside gesture ──
         try {
             if(!this._audioCtx) this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const ctx = this._audioCtx;
+            // Resume must be called synchronously inside the user gesture handler for iOS
             if(ctx.state === 'suspended') ctx.resume();
 
             const playBuffer = () => {
+                if(ctx.state === 'suspended') return; // still locked; skip rather than error
                 const src = ctx.createBufferSource();
                 src.buffer = this._clickBuffer;
                 const gain = ctx.createGain();
@@ -2025,6 +2017,39 @@ class MonlithEngine {
 }
 const MONLITH = new MonlithEngine();
 
+// ── iOS AudioContext unlock ──
+// iOS Safari blocks AudioContext until a user gesture. We create and resume
+// the context on the very first touchstart anywhere on the page, then
+// decode the click audio immediately so it's ready for the first tap.
+(function iosAudioUnlock() {
+    function unlock() {
+        try {
+            if (!MONLITH._audioCtx) {
+                MONLITH._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const ctx = MONLITH._audioCtx;
+            // Resume must be called synchronously inside the gesture handler
+            if (ctx.state === 'suspended') ctx.resume();
+            // Decode audio data now so buffer is ready for first real tap
+            if (!MONLITH._clickBuffer && !MONLITH._clickLoading) {
+                MONLITH._clickLoading = true;
+                MONLITH._decodeClickAudio(
+                    ctx,
+                    () => { MONLITH._clickLoading = false; },
+                    () => { MONLITH._clickLoading = false; }
+                );
+            }
+        } catch(e) {}
+        // Only needs to run once
+        document.removeEventListener('touchstart', unlock, true);
+        document.removeEventListener('touchend', unlock, true);
+        document.removeEventListener('click', unlock, true);
+    }
+    document.addEventListener('touchstart', unlock, { capture: true, once: true, passive: true });
+    document.addEventListener('touchend',   unlock, { capture: true, once: true, passive: true });
+    document.addEventListener('click',      unlock, { capture: true, once: true, passive: true });
+})();
+
 // ── Button click pulse + sound helper ──
 function btnClick(el) {
     if(!el) return;
@@ -2230,19 +2255,32 @@ function btnClick(el) {
     const MIN_INTERVAL = 25000;
     const MAX_INTERVAL = 55000;
 
+    function getDropStop() {
+        // Measure the actual position of the range slider so drops always stop above it
+        const slider = document.querySelector('input[type=range]');
+        if (slider) {
+            const rect = slider.getBoundingClientRect();
+            // Stop 60px above the slider top so the drop visibly clears it
+            return (rect.top - 60) + 'px';
+        }
+        // Fallback: desktop vs mobile estimate
+        return window.innerWidth <= 1024 ? (window.innerHeight - 180) + 'px' : (window.innerHeight - 380) + 'px';
+    }
+
     function spawnDrop() {
         if (!document.getElementById('mainApp')?.classList.contains('visible')) {
             scheduleNext(); return;
         }
         if (typeof MONLITH === 'undefined') { scheduleNext(); return; }
 
+        // Set the CSS variable to the measured stop point before spawning
+        document.documentElement.style.setProperty('--drop-stop', getDropStop());
+
         const el = document.createElement('div');
         el.className = 'lucky-drop';
         // On mobile panels stack full-width; on desktop constrain to left panel (~55vw)
         const isMobile = window.innerWidth <= 1024;
-        const xMax = isMobile ? 80 : 48;
-        const xMin = isMobile ? 5 : 5;
-        const x = xMin + Math.random() * xMax;
+        const x = 5 + Math.random() * (isMobile ? 80 : 48);
         const duration = 7000 + Math.random() * 4000;
         el.style.left = x + 'vw';
         el.style.animationDuration = duration + 'ms';
