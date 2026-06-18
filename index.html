@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MONLITH // NEXUS PRO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600&family=Share+Tech+Mono&display=swap');
+
+        :root { 
+            --bg: #05080c; 
+            --panel: rgba(16, 25, 34, 0.6); 
+            --blue: #00f2ff; 
+            --text: #e0e9f0; 
+            --border: rgba(64, 223, 255, 0.2);
+            --red: #ff4466;
+        }
+
+        * { box-sizing: border-box; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(64, 223, 255, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
+
+        /* ─── GRID BACKGROUND ─── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,242,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,242,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── ACCESS SCREEN ─── */
+        #accessScreen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            gap: 0;
+        }
+
+        .access-top-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: rgba(0,242,255,0.4);
+            letter-spacing: 2px;
+        }
+
+        .access-bottom-bar {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-top: 1px solid var(--border);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: rgba(0,242,255,0.3);
+            letter-spacing: 2px;
+        }
+
+        .access-logo {
+            font-size: 0.7rem;
+            letter-spacing: 6px;
+            color: rgba(0,242,255,0.5);
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        .access-logo::after {
+            content: '';
+            display: block;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--blue), transparent);
+            margin-top: 10px;
+            opacity: 0.4;
+        }
+
+        .access-title {
+            font-size: 3.5rem;
+            font-weight: 200;
+            letter-spacing: 12px;
+            color: var(--blue);
+            text-transform: uppercase;
+            text-shadow: 0 0 40px rgba(0,242,255,0.4), 0 0 80px rgba(0,242,255,0.15);
+            margin-bottom: 8px;
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 0 0 40px rgba(0,242,255,0.4), 0 0 80px rgba(0,242,255,0.15); }
+            50% { text-shadow: 0 0 60px rgba(0,242,255,0.7), 0 0 120px rgba(0,242,255,0.25); }
+        }
+
+        .access-subtitle {
+            font-size: 0.65rem;
+            letter-spacing: 5px;
+            color: rgba(0,242,255,0.5);
+            text-transform: uppercase;
+            margin-bottom: 70px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .access-box {
+            background: rgba(16, 25, 34, 0.8);
+            border: 1px solid var(--border);
+            padding: 50px 60px;
+            width: 460px;
+            backdrop-filter: blur(20px);
+            position: relative;
+        }
+
+        /* corner accents */
+        .access-box::before, .access-box::after {
+            content: '';
+            position: absolute;
+            width: 16px; height: 16px;
+            border-color: var(--blue);
+            border-style: solid;
+            opacity: 0.6;
+        }
+        .access-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        .access-box::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+        .access-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: rgba(0,242,255,0.6);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .access-input-wrap {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .access-input {
+            width: 100%;
+            background: rgba(0,242,255,0.03);
+            border: 1px solid var(--border);
+            border-bottom: 2px solid rgba(0,242,255,0.4);
+            color: var(--blue);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.3rem;
+            letter-spacing: 8px;
+            padding: 16px 50px 16px 20px;
+            outline: none;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .access-input:focus {
+            border-color: var(--blue);
+            background: rgba(0,242,255,0.06);
+            box-shadow: 0 0 20px rgba(0,242,255,0.1), inset 0 0 20px rgba(0,242,255,0.03);
+        }
+        .access-input.error {
+            border-color: var(--red);
+            animation: shake 0.4s ease;
+            color: var(--red);
+            box-shadow: 0 0 20px rgba(255,68,102,0.2);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        .access-eye {
+            position: absolute;
+            right: 16px; top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(0,242,255,0.3);
+            font-size: 0.8rem;
+            letter-spacing: 0;
+            user-select: none;
+            transition: color 0.2s;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .access-eye:hover { color: var(--blue); }
+
+        .access-error {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--red);
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            height: 14px;
+            transition: opacity 0.3s;
+        }
+
+        .access-btn {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--blue);
+            color: var(--blue);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+            padding: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .access-btn::before {
+            content: '';
+            position: absolute;
+            left: -100%; top: 0; bottom: 0;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,242,255,0.1), transparent);
+            transition: left 0.4s;
+        }
+        .access-btn:hover { background: rgba(0,242,255,0.08); box-shadow: 0 0 30px rgba(0,242,255,0.2); }
+        .access-btn:hover::before { left: 100%; }
+        .access-btn:active { background: rgba(0,242,255,0.15); }
+
+        .access-attempts {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            color: rgba(0,242,255,0.25);
+            letter-spacing: 2px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .dot-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            justify-content: center;
+        }
+        .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: rgba(0,242,255,0.2);
+            transition: background 0.3s;
+        }
+        .dot.typed { background: var(--blue); box-shadow: 0 0 6px var(--blue); }
+        .dot.wrong { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+        /* ─── SUCCESS FLASH ─── */
+        #successFlash {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,242,255,0.08);
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* ─── SCANLINE overlay ─── */
+        #accessScreen::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+        }
+
+        /* ─── MADE BY ─── */
+        .made-by {
+            margin-top: 40px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 4px;
+            color: rgba(0,242,255,0.2);
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .made-by span { color: rgba(0,242,255,0.5); }
+
+        /* ─── TYPING ANIMATION ─── */
+        #scanText {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: rgba(0,242,255,0.35);
+            letter-spacing: 2px;
+            margin-top: 30px;
+            height: 16px;
+            text-align: center;
+        }
+
+        /* ─── MAIN APP ─── */
+        #mainApp {
+            display: none;
+            height: 100vh;
+            padding: 60px;
+        }
+        #mainApp.visible {
+            display: flex;
+        }
+
+        #core-left { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            overflow: hidden; 
+            padding-right: 40px; 
+            height: calc(100vh - 120px);
+        }
+
+        #top-section {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        #upgList { 
+            flex: 1; 
+            min-height: 0; 
+            overflow-y: auto; 
+            padding-right: 10px;
+        }
+
+        #core-right { width: 350px; padding-left: 40px; border-left: 1px solid var(--border); overflow-y: auto; }
+
+        .val { font-size: 3.5rem; font-weight: 200; letter-spacing: -3px; color: var(--blue); text-shadow: 0 0 20px rgba(0, 242, 255, 0.2); line-height: 1; }
+        
+        .btn-action { background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 20px; cursor: pointer; width: 100%; text-align: left; font-size: 0.9rem; margin-bottom: 10px; backdrop-filter: blur(10px); transition: all 0.3s ease; }
+        .btn-action:hover:not(:disabled) { border-color: var(--blue); background: rgba(0, 242, 255, 0.05); }
+        .btn-action:disabled { opacity: 0.3; filter: grayscale(1); }
+
+        .harvest-btn { border: 1px solid var(--blue); color: var(--blue); padding: 25px; cursor: pointer; background: transparent; font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+        .harvest-btn:hover { background: var(--blue); color: var(--bg); box-shadow: 0 0 30px rgba(0, 242, 255, 0.3); }
+
+        input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; background: #1a2a3a; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--blue); margin-top: -6px; border: 2px solid var(--bg); box-shadow: 0 0 10px var(--blue); }
+        
+        h3 { font-weight: 300; letter-spacing: 2px; color: var(--blue); text-transform: uppercase; font-size: 0.8rem; }
+        .research-card { background: var(--panel); border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; font-size: 0.85rem; }
+
+        /* session tag in main app */
+        #sessionTag {
+            position: fixed;
+            top: 20px; right: 40px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            color: rgba(0,242,255,0.3);
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+
+        /* ─── RESPONSIVE: TABLET (iPad) ─── */
+        @media (max-width: 1024px) {
+            /* Access screen */
+            .access-top-bar, .access-bottom-bar { padding: 16px 24px; font-size: 0.6rem; }
+            .access-title { font-size: 2.6rem; letter-spacing: 8px; }
+            .access-logo { margin-bottom: 40px; }
+            .access-subtitle { margin-bottom: 40px; }
+            .access-box { width: 420px; padding: 40px 44px; }
+
+            /* Main app: stack left and right panels */
+            #mainApp { flex-direction: column; padding: 24px 24px 40px; height: auto; min-height: 100vh; overflow-y: auto; }
+            body { overflow: auto; }
+            #core-left { padding-right: 0; height: auto; overflow: visible; }
+            #core-right { width: 100%; padding-left: 0; border-left: none; border-top: 1px solid var(--border); padding-top: 24px; margin-top: 8px; overflow-y: visible; }
+            #sessionTag { top: 12px; right: 16px; font-size: 0.55rem; }
+        }
+
+        /* ─── RESPONSIVE: PHONE ─── */
+        @media (max-width: 600px) {
+            /* Access screen */
+            .access-top-bar { padding: 12px 16px; font-size: 0.55rem; letter-spacing: 1px; }
+            .access-top-bar span:nth-child(3) { display: none; } /* hide "CLEARANCE REQUIRED" on small screens */
+            .access-bottom-bar { padding: 12px 16px; font-size: 0.55rem; letter-spacing: 1px; }
+            .access-bottom-bar span:first-child { display: none; }
+            .access-logo { font-size: 0.6rem; letter-spacing: 4px; margin-bottom: 28px; }
+            .access-title { font-size: 2rem; letter-spacing: 6px; margin-bottom: 6px; }
+            .access-subtitle { font-size: 0.55rem; letter-spacing: 3px; margin-bottom: 32px; text-align: center; }
+            .access-box { width: calc(100% - 32px); padding: 28px 24px; }
+            .access-input { font-size: 1.1rem; letter-spacing: 6px; padding: 14px 44px 14px 16px; }
+            .access-btn { font-size: 0.75rem; letter-spacing: 3px; padding: 16px; }
+            .made-by { margin-top: 24px; }
+            #scanText { margin-top: 20px; }
+
+            /* Main app */
+            #mainApp { padding: 16px 16px 40px; }
+            .val { font-size: 2.6rem; }
+            .harvest-btn { padding: 20px; font-size: 1rem; }
+            .btn-action { padding: 16px; font-size: 0.85rem; }
+            #sessionTag { display: none; }
+
+            /* Reset modal */
+            #resetModal > div { width: calc(100% - 32px) !important; padding: 32px 24px 28px !important; }
+
+            /* Research tree: make 3-col grid scroll or go 1-col */
+            .res-tree-card { font-size: 0.75rem; }
+        }
+
+        /* Touch: make harvest button more finger-friendly */
+        @media (hover: none) and (pointer: coarse) {
+            .harvest-btn { min-height: 64px; }
+            .btn-action { min-height: 52px; }
+            .access-btn { min-height: 56px; }
+            input[type=range]::-webkit-slider-thumb { height: 22px; width: 22px; margin-top: -10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="successFlash"></div>
+
+<!-- ─── ACCESS SCREEN ─── -->
+<div id="accessScreen">
+    <div class="access-top-bar">
+        <span>MONLITH SYS // NEXUS PRO v4.7.1</span>
+        <span id="accessClock"></span>
+        <span>CLEARANCE REQUIRED</span>
+    </div>
+
+    <div class="access-logo">RESTRICTED ACCESS</div>
+
+    <div class="access-title">MONLITH</div>
+    <div class="access-subtitle">// NEXUS PROTOCOL — AUTHENTICATION REQUIRED //</div>
+
+    <div class="access-box">
+        <div class="access-label">⬡ ACCESS KEY</div>
+        <div class="access-input-wrap">
+            <input class="access-input" id="pwInput" type="password" maxlength="10"
+                placeholder="· · · · ·"
+                oninput="accessUI.onType()"
+                onkeydown="if(event.key==='Enter') accessUI.submit()">
+            <span class="access-eye" id="eyeToggle" onclick="accessUI.toggleVis()">SHOW</span>
+        </div>
+        <div class="access-error" id="accessError"></div>
+        <button class="access-btn" onclick="accessUI.submit()">⬡ AUTHENTICATE</button>
+        <div class="access-attempts" id="attemptsInfo">
+            ATTEMPTS REMAINING
+            <div class="dot-row" id="dotRow">
+                <div class="dot" id="d0"></div>
+                <div class="dot" id="d1"></div>
+                <div class="dot" id="d2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="scanText"></div>
+
+    <div class="made-by">DEVELOPED BY <span>SEALS</span></div>
+
+    <div class="access-bottom-bar">
+        <span>NODE: ALPHA-7 // SECTOR: NEXUS</span>
+        <span id="accessDate"></span>
+        <span>© SEALS SYSTEMS</span>
+    </div>
+</div>
+
+<!-- ─── MAIN APP ─── -->
+<div id="mainApp">
+    <div id="sessionTag">SESSION: ACTIVE // OPERATOR: SEALS</div>
+    <div id="core-left">
+        <div id="top-section">
+            <div id="cDisp" class="val">0</div>
+            <div id="ppsDisplay" style="color:var(--blue); opacity: 0.8;">PPS: 0</div>
+            <button class="harvest-btn" onclick="MONLITH.manualClick()">INITIATE HARVEST</button>
+            <div style="font-size:0.68rem;opacity:0.3;letter-spacing:1px;margin-top:-6px;">Click to manually harvest coins. Boosted by click research.</div>
+            <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--blue);">SYSTEM GAIN SCALE</label>
+            <div style="font-size:0.68rem;opacity:0.3;letter-spacing:1px;margin-top:-8px;">Scales all passive production up or down. Centre = 1×.</div>
+            <input type="range" min="1" max="100" value="50" oninput="MONLITH.updateScale(this.value)">
+        </div>
+        <div id="upgList"></div>
+    </div>
+
+    <div id="core-right">
+        <h3>RESEARCH NEXUS</h3>
+        <div id="unlockRes">
+            <div style="background:var(--panel);border:1px solid var(--border);padding:20px;margin-bottom:10px;backdrop-filter:blur(10px);">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+                    <span style="font-weight:600;letter-spacing:1px;font-size:0.9rem;">UNLOCK NEXUS</span>
+                    <span id="nexusPct" style="font-size:0.7rem;color:var(--blue);opacity:0.7;font-family:'Share Tech Mono',monospace;">0%</span>
+                </div>
+                <div style="font-size:0.72rem;opacity:0.4;margin-bottom:12px;line-height:1.4;">Spend 1,000,000 coins to unlock the Research Nexus and gain access to permanent upgrades.</div>
+                <div style="background:#0a1420;border:1px solid var(--border);height:4px;margin-bottom:12px;overflow:hidden;">
+                    <div id="nexusBar" style="height:100%;width:0%;background:var(--blue);box-shadow:0 0 8px var(--blue);transition:width 0.3s;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <span style="font-size:0.72rem;opacity:0.4;font-family:'Share Tech Mono',monospace;">TARGET: 1,000,000</span>
+                    <span id="nexusRemaining" style="font-size:0.72rem;color:var(--blue);opacity:0.6;font-family:'Share Tech Mono',monospace;">NEED: 1,000,000</span>
+                </div>
+                <button id="nexusUnlockBtn" onclick="MONLITH.unlockResearch()" disabled
+                    style="width:100%;background:transparent;border:1px solid rgba(0,242,255,0.2);color:rgba(0,242,255,0.3);font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:3px;padding:14px;cursor:not-allowed;transition:all 0.3s;">
+                    LOCKED
+                </button>
+            </div>
+        </div>
+        
+        <div id="ascendSection" style="margin-top:30px;">
+            <button id="realAscendBtn" class="btn-action" onclick="MONLITH.prestige()" disabled style="border: 1px solid var(--blue);">
+                REAL ASCEND
+                <div style="font-size:0.72rem;opacity:0.4;margin:4px 0 2px;line-height:1.4;">Reset all coins and generators in exchange for Shards — a permanent multiplier that stacks across every ascension.</div>
+                <small id="ascendReq">REQ: 10,000,000 COINS</small>
+            </button>
+        </div>
+        <div id="researchArea"></div>
+
+        <!-- ─── FILE SECTION ─── -->
+        <div style="margin-top:30px;">
+            <h3>FILE</h3>
+            <div style="background:var(--panel);border:1px solid var(--border);padding:16px;margin-bottom:10px;backdrop-filter:blur(10px);">
+                <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:2px;color:rgba(0,242,255,0.4);margin-bottom:4px;">AUTO-SAVE</div>
+                <div id="saveStatusMsg" style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:2px;color:rgba(0,242,255,0.3);transition:color 0.4s;">LAST SAVED: —</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:10px;">
+                <button class="btn-action" style="margin-bottom:0;flex:1;color:rgba(0,242,255,0.7);border-color:rgba(0,242,255,0.2);text-align:center;padding:14px 10px;" onclick="MONLITH.exportSave()">
+                    ⬡ EXPORT SAVE
+                    <div style="font-size:0.65rem;opacity:0.4;margin-top:3px;">Copy to clipboard</div>
+                </button>
+                <button class="btn-action" style="margin-bottom:0;flex:1;color:rgba(0,242,255,0.7);border-color:rgba(0,242,255,0.2);text-align:center;padding:14px 10px;" onclick="MONLITH.showImport()">
+                    ⬡ IMPORT SAVE
+                    <div style="font-size:0.65rem;opacity:0.4;margin-top:3px;">Paste save string</div>
+                </button>
+            </div>
+            <button class="btn-action" style="color:#ff8e8e;border-color:rgba(255,142,142,0.2);" onclick="MONLITH.confirmReset()">
+                RESET ALL DATA
+                <div style="font-size:0.72rem;opacity:0.35;margin-top:4px;line-height:1.4;">Permanently wipes all progress, shards, and research. Cannot be undone.</div>
+            </button>
+        </div>
+
+        <!-- IMPORT MODAL -->
+        <div id="importModal" style="display:none;position:fixed;inset:0;background:rgba(5,8,12,0.88);backdrop-filter:blur(8px);z-index:9000;align-items:center;justify-content:center;">
+            <div style="background:#0a1018;border:1px solid rgba(0,242,255,0.3);padding:40px;width:480px;max-width:calc(100vw - 32px);position:relative;font-family:'Share Tech Mono',monospace;box-sizing:border-box;">
+                <div style="position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--blue);border-left:2px solid var(--blue);"></div>
+                <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--blue);border-right:2px solid var(--blue);"></div>
+                <div style="font-size:0.6rem;letter-spacing:4px;color:rgba(0,242,255,0.5);margin-bottom:16px;">⬡ IMPORT SAVE DATA</div>
+                <div style="font-size:0.75rem;color:rgba(224,233,240,0.4);line-height:1.6;margin-bottom:20px;">Paste your exported save string below. This will overwrite your current progress.</div>
+                <textarea id="importInput" placeholder="Paste save string here..."
+                    style="width:100%;height:100px;background:rgba(0,242,255,0.03);border:1px solid rgba(0,242,255,0.2);border-bottom:2px solid rgba(0,242,255,0.4);color:var(--blue);font-family:'Share Tech Mono',monospace;font-size:0.7rem;letter-spacing:1px;padding:12px;outline:none;resize:none;box-sizing:border-box;margin-bottom:8px;"></textarea>
+                <div id="importErr" style="font-size:0.65rem;color:rgba(255,68,102,0);letter-spacing:2px;height:14px;margin-bottom:16px;transition:color 0.2s;">INVALID SAVE DATA</div>
+                <div style="display:flex;gap:12px;">
+                    <button onclick="MONLITH.cancelImport()" style="flex:1;background:transparent;border:1px solid rgba(224,233,240,0.15);color:rgba(224,233,240,0.4);font-family:'Share Tech Mono',monospace;font-size:0.75rem;letter-spacing:2px;padding:14px;cursor:pointer;transition:all 0.2s;"
+                        onmouseover="this.style.borderColor='rgba(224,233,240,0.4)';this.style.color='rgba(224,233,240,0.7)'"
+                        onmouseout="this.style.borderColor='rgba(224,233,240,0.15)';this.style.color='rgba(224,233,240,0.4)'">
+                        CANCEL
+                    </button>
+                    <button onclick="MONLITH.executeImport()" style="flex:1;background:transparent;border:1px solid rgba(0,242,255,0.4);color:var(--blue);font-family:'Share Tech Mono',monospace;font-size:0.75rem;letter-spacing:2px;padding:14px;cursor:pointer;transition:all 0.2s;"
+                        onmouseover="this.style.background='rgba(0,242,255,0.08)'"
+                        onmouseout="this.style.background='transparent'">
+                        LOAD SAVE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONFIRMATION MODAL -->
+        <div id="resetModal" style="display:none; position:fixed; inset:0; background:rgba(5,8,12,0.85); backdrop-filter:blur(8px); z-index:9000; align-items:center; justify-content:center;">
+            <div style="background:#0a1018; border:1px solid rgba(255,68,102,0.4); padding:50px 50px 40px; width:440px; position:relative; font-family:'Share Tech Mono',monospace;">
+                <!-- corner accents -->
+                <div style="position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid #ff4466;border-left:2px solid #ff4466;"></div>
+                <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid #ff4466;border-right:2px solid #ff4466;"></div>
+
+                <div style="font-size:0.6rem;letter-spacing:4px;color:rgba(255,68,102,0.6);margin-bottom:20px;">⚠ SYSTEM WARNING</div>
+                <div style="font-size:1.3rem;letter-spacing:3px;color:#ff4466;margin-bottom:16px;font-weight:600;">PURGE ALL DATA?</div>
+                <div style="font-size:0.75rem;color:rgba(224,233,240,0.45);line-height:1.7;margin-bottom:10px;">
+                    This will permanently destroy:<br>
+                    <span style="color:rgba(255,68,102,0.6);">— All coins &amp; passive generators<br>
+                    — All ascension shards<br>
+                    — All research upgrades<br>
+                    — All saved progress</span>
+                </div>
+                <div style="font-size:0.7rem;color:rgba(255,68,102,0.4);letter-spacing:2px;margin-bottom:30px;">THIS ACTION CANNOT BE REVERSED.</div>
+
+                <div style="font-size:0.65rem;color:rgba(224,233,240,0.3);letter-spacing:2px;margin-bottom:10px;">TYPE <span style="color:#ff4466;">CONFIRM</span> TO PROCEED</div>
+                <input id="resetConfirmInput" type="text" placeholder="type here..."
+                    style="width:100%;background:rgba(255,68,102,0.05);border:1px solid rgba(255,68,102,0.25);border-bottom:2px solid rgba(255,68,102,0.5);color:#ff8e8e;font-family:'Share Tech Mono',monospace;font-size:1rem;letter-spacing:4px;padding:14px 16px;outline:none;text-transform:uppercase;margin-bottom:8px;box-sizing:border-box;"
+                    oninput="MONLITH.resetInputCheck()"
+                    onkeydown="if(event.key==='Enter') MONLITH.executeReset()">
+                <div id="resetInputErr" style="font-size:0.65rem;color:rgba(255,68,102,0);letter-spacing:2px;height:14px;margin-bottom:20px;transition:color 0.2s;">INCORRECT — TYPE CONFIRM</div>
+
+                <div style="display:flex;gap:12px;">
+                    <button onclick="MONLITH.cancelReset()" style="flex:1;background:transparent;border:1px solid rgba(224,233,240,0.15);color:rgba(224,233,240,0.4);font-family:'Share Tech Mono',monospace;font-size:0.75rem;letter-spacing:2px;padding:14px;cursor:pointer;transition:all 0.2s;"
+                        onmouseover="this.style.borderColor='rgba(224,233,240,0.4)';this.style.color='rgba(224,233,240,0.7)'"
+                        onmouseout="this.style.borderColor='rgba(224,233,240,0.15)';this.style.color='rgba(224,233,240,0.4)'">
+                        CANCEL
+                    </button>
+                    <button id="resetConfirmBtn" onclick="MONLITH.executeReset()" disabled
+                        style="flex:1;background:transparent;border:1px solid rgba(255,68,102,0.2);color:rgba(255,68,102,0.3);font-family:'Share Tech Mono',monospace;font-size:0.75rem;letter-spacing:2px;padding:14px;cursor:not-allowed;transition:all 0.3s;">
+                        PURGE DATA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ─── ACCESS UI ─── */
+const accessUI = (() => {
+    const PASSWORD = 'SEALS';
+    let attempts = 3;
+    let visible = false;
+    const scanLines = [
+        'INITIALIZING SECURE CHANNEL...',
+        'VERIFYING NODE INTEGRITY...',
+        'AWAITING OPERATOR INPUT...',
+        'NEXUS STANDING BY...',
+        'ENCRYPTION ACTIVE...',
+        'MONITORING PERIMETER...',
+    ];
+    let scanIdx = 0;
+
+    function clock() {
+        const now = new Date();
+        const t = now.toTimeString().slice(0,8);
+        document.getElementById('accessClock').textContent = t;
+        document.getElementById('accessDate').textContent =
+            now.toDateString().toUpperCase() + ' // ' + t + ' UTC';
+    }
+    setInterval(clock, 1000); clock();
+
+    function cycleScan() {
+        const el = document.getElementById('scanText');
+        el.textContent = '';
+        const msg = scanLines[scanIdx % scanLines.length];
+        scanIdx++;
+        let i = 0;
+        const iv = setInterval(() => {
+            if(i >= msg.length) { clearInterval(iv); setTimeout(cycleScan, 1800); return; }
+            el.textContent += msg[i++];
+        }, 40);
+    }
+    cycleScan();
+
+    function updateDots(n, wrong) {
+        for(let i = 0; i < 3; i++) {
+            const d = document.getElementById('d'+i);
+            d.className = 'dot';
+            if(i < n) d.classList.add(wrong ? 'wrong' : 'typed');
+        }
+    }
+
+    function onType() {
+        const val = document.getElementById('pwInput').value;
+        updateDots(val.length, false);
+        document.getElementById('accessError').textContent = '';
+        document.getElementById('pwInput').classList.remove('error');
+    }
+
+    function toggleVis() {
+        visible = !visible;
+        document.getElementById('pwInput').type = visible ? 'text' : 'password';
+        document.getElementById('eyeToggle').textContent = visible ? 'HIDE' : 'SHOW';
+    }
+
+    function submit() {
+        const val = document.getElementById('pwInput').value.toUpperCase().trim();
+        if(val === PASSWORD) {
+            // Success
+            document.getElementById('accessError').style.color = 'var(--blue)';
+            document.getElementById('accessError').textContent = '✓ ACCESS GRANTED';
+            updateDots(3, false);
+            const flash = document.getElementById('successFlash');
+            flash.style.opacity = '1';
+            setTimeout(() => { flash.style.opacity = '0'; }, 300);
+            setTimeout(() => {
+                document.getElementById('accessScreen').style.opacity = '0';
+                document.getElementById('accessScreen').style.transition = 'opacity 0.6s';
+                setTimeout(() => {
+                    document.getElementById('accessScreen').style.display = 'none';
+                    document.getElementById('mainApp').classList.add('visible');
+                    MONLITH.loop();
+                }, 600);
+            }, 700);
+        } else {
+            attempts--;
+            document.getElementById('pwInput').classList.add('error');
+            updateDots(3, true);
+            document.getElementById('accessError').style.color = 'var(--red)';
+            document.getElementById('accessError').textContent =
+                attempts > 0 ? `✗ INVALID KEY — ${attempts} ATTEMPT${attempts !== 1 ? 'S' : ''} REMAINING` : '✗ SYSTEM LOCKED — CONTACT SEALS';
+            if(attempts <= 0) {
+                document.getElementById('pwInput').disabled = true;
+                document.querySelector('.access-btn').disabled = true;
+                document.querySelector('.access-btn').textContent = '⬡ SYSTEM LOCKED';
+            }
+            setTimeout(() => {
+                document.getElementById('pwInput').classList.remove('error');
+                document.getElementById('pwInput').value = '';
+                updateDots(0, false);
+            }, 800);
+        }
+    }
+
+    return { submit, onType, toggleVis };
+})();
+
+/* ─── GAME ENGINE ─── */
+class MonlithEngine {
+    constructor() {
+        this.s = { c: 0, shards: 0, resUnlocked: false, dataPoints: 0, clickPower: 1, scale: 1,
+            upg: {
+                m1:  { n: "NODE",             d: "A basic harvesting node. Slow but reliable.", c: 15,          q: 0, p: 1 },
+                m2:  { n: "DRILL",            d: "Bores into the data substrate, extracting raw coins.", c: 100,         q: 0, p: 8 },
+                m3:  { n: "PULSE ARRAY",      d: "Emits rhythmic energy pulses that siphon value from the grid.", c: 500,         q: 0, p: 35 },
+                m4:  { n: "VOID FORGE",       d: "Smiths coins from compressed void matter.", c: 1000,        q: 0, p: 80 },
+                m5:  { n: "NEBULA COIL",      d: "Wraps a nebula into a coil, converting stellar mass to currency.", c: 5000,        q: 0, p: 350 },
+                m6:  { n: "DARK REACTOR",     d: "Fissions dark matter to produce a continuous stream of output.", c: 15000,       q: 0, p: 1200 },
+                m7:  { n: "TIME ANCHOR",      d: "Locks a moment in time and harvests its potential repeatedly.", c: 25000,       q: 0, p: 2500 },
+                m8:  { n: "ENTROPY WELL",     d: "Captures the decay of the universe and converts it to coins.", c: 80000,       q: 0, p: 8000 },
+                m9:  { n: "REALITY HUB",      d: "A central node routing value streams across parallel realities.", c: 100000,      q: 0, p: 14000 },
+                m10: { n: "PHASE CONDUIT",    d: "Tunnels between phases of matter to extract energy.", c: 300000,      q: 0, p: 40000 },
+                m11: { n: "SINGULARITY",      d: "An infinite density point — immense gravity pulls in all wealth.", c: 500000,      q: 0, p: 75000 },
+                m12: { n: "AXIOM CORE",       d: "Rewrites the fundamental laws to favour coin generation.", c: 1200000,     q: 0, p: 200000 },
+                m13: { n: "GALAXY ENGINE",    d: "Harnesses galactic rotation as a perpetual power source.", c: 2000000,     q: 0, p: 450000 },
+                m14: { n: "RIFT HARVESTER",   d: "Tears open dimensional rifts and drains the energy within.", c: 5000000,     q: 0, p: 1500000 },
+                m15: { n: "DIMENSIONAL RIP",  d: "Ruptures spacetime, allowing harvest from infinite parallel worlds.", c: 10000000,    q: 0, p: 4000000 },
+                m16: { n: "VOID SOVEREIGN",   d: "Commands the void itself, ordering it to produce without limit.", c: 50000000,    q: 0, p: 15000000 },
+                m17: { n: "OMEGA LATTICE",    d: "A crystalline lattice spanning the cosmos, resonating with pure value.", c: 200000000,   q: 0, p: 60000000 },
+                m18: { n: "CAUSAL DISRUPTOR", d: "Breaks causality chains, harvesting from events before they occur.", c: 800000000,   q: 0, p: 250000000 },
+                m19: { n: "NEXUS PRIME",      d: "The apex of all nexus structures — an infinite convergence point.", c: 3000000000,  q: 0, p: 1000000000 },
+                m20: { n: "THE MONLITH",      d: "The Monlith itself awakens. Reality is its harvest.", c: 10000000000, q: 0, p: 5000000000 }
+            },
+            research: {
+                // TIER 1 — always available
+                r1:  { n: "Neural Link",        tier: 1, branch: "prod",   cost: 10,    bought: false, req: [],          effect: "+1.5× Production",  mult: {pps: 1.5},          d: "Hardwires your nodes into a mesh network." },
+                r2:  { n: "Quantum Speed",      tier: 1, branch: "click",  cost: 10,    bought: false, req: [],          effect: "+2× Click Power",   mult: {click: 2},          d: "Exploits quantum tunnelling for faster harvests." },
+                r3:  { n: "Signal Boost",       tier: 1, branch: "global", cost: 10,    bought: false, req: [],          effect: "+1.25× All Output", mult: {global: 1.25},      d: "Amplifies every output signal across the grid." },
+
+                // TIER 2 — need 1 T1
+                r4:  { n: "Synaptic Weave",     tier: 2, branch: "prod",   cost: 75,    bought: false, req: ["r1"],      effect: "+2× Production",    mult: {pps: 2},            d: "Densifies the neural mesh for double throughput." },
+                r5:  { n: "Dark Flow",          tier: 2, branch: "click",  cost: 75,    bought: false, req: ["r2"],      effect: "+3× Click Power",   mult: {click: 3},          d: "Channels dark energy into every manual harvest." },
+                r6:  { n: "Matter Synthesis",   tier: 2, branch: "global", cost: 75,    bought: false, req: ["r3"],      effect: "+2× All Output",    mult: {global: 2},         d: "Synthesises raw matter from ambient fields." },
+
+                // TIER 3 — need 1 T2
+                r7:  { n: "Void Resonance",     tier: 3, branch: "prod",   cost: 400,   bought: false, req: ["r4"],      effect: "+2.5× Production",  mult: {pps: 2.5},          d: "Tunes all generators to the void frequency." },
+                r8:  { n: "Kinetic Overload",   tier: 3, branch: "click",  cost: 400,   bought: false, req: ["r5"],      effect: "+5× Click Power",   mult: {click: 5},          d: "Pushes click energy past its theoretical limit." },
+                r9:  { n: "Entropy Harvest",    tier: 3, branch: "global", cost: 400,   bought: false, req: ["r6"],      effect: "+3× All Output",    mult: {global: 3},         d: "Converts universal decay directly into output." },
+
+                // TIER 4 — need 1 T3
+                r10: { n: "Temporal Surge",     tier: 4, branch: "prod",   cost: 1500,  bought: false, req: ["r7"],      effect: "+4× Production",    mult: {pps: 4},            d: "Bends local time so generators run at 4× speed." },
+                r11: { n: "Singularity Touch",  tier: 4, branch: "click",  cost: 1500,  bought: false, req: ["r8"],      effect: "+10× Click Power",  mult: {click: 10},         d: "Each click briefly collapses a micro-singularity." },
+                r12: { n: "Reality Fracture",   tier: 4, branch: "global", cost: 1500,  bought: false, req: ["r9"],      effect: "+5× All Output",    mult: {global: 5},         d: "Fractures reality, leaking output from parallel timelines." },
+
+                // TIER 5 — endgame, need all T4 branch
+                r13: { n: "NEXUS OMEGA",        tier: 5, branch: "omega",  cost: 5000,  bought: false, req: ["r10","r11","r12"], effect: "+10× EVERYTHING", mult: {pps: 10, click: 10, global: 10}, d: "The ultimate convergence of all research paths. Unlocks the true power of the Monlith." }
+            }
+        };
+        this._loopStarted = false;
+        this.load();
+    }
+
+    format = n => {
+        if (n < 1e3)  return Math.floor(n).toLocaleString();
+        if (n < 1e6)  return (n / 1e3).toFixed(2) + 'K';
+        if (n < 1e9)  return (n / 1e6).toFixed(2) + 'M';
+        if (n < 1e12) return (n / 1e9).toFixed(2) + 'B';
+        if (n < 1e15) return (n / 1e12).toFixed(2) + 'T';
+        return n.toExponential(2);
+    };
+    updateScale(val) { this.s.scale = val / 50; this.render(); }
+    manualClick() {
+        let clickMult = 1;
+        for(let r of Object.values(this.s.research)) if(r.bought && r.mult?.click) clickMult *= r.mult.click;
+        this.s.c += (this.s.clickPower * clickMult);
+        this.render();
+    }
+    calcPPS = () => {
+        let base = Object.values(this.s.upg).reduce((a, u) => a + (u.q * u.p), 0);
+        let ppsMult = 1, globalMult = 1;
+        for(let r of Object.values(this.s.research)) {
+            if(!r.bought) continue;
+            if(r.mult?.pps)    ppsMult    *= r.mult.pps;
+            if(r.mult?.global) globalMult *= r.mult.global;
+        }
+        return base * ppsMult * globalMult * (1 + this.s.shards) * this.s.scale;
+    };
+    
+    unlockResearch() { if(this.s.c >= 1000000) { this.s.c -= 1000000; this.s.resUnlocked = true; this.render(); } }
+    canBuyResearch(id) {
+        const r = this.s.research[id];
+        if(r.bought) return false;
+        if(this.s.dataPoints < r.cost) return false;
+        for(let req of r.req) if(!this.s.research[req]?.bought) return false;
+        return true;
+    }
+    buyResearch(id) {
+        if(!this.canBuyResearch(id)) return;
+        this.s.dataPoints -= this.s.research[id].cost;
+        this.s.research[id].bought = true;
+        this.render();
+    }
+    buy(id) { let u = this.s.upg[id]; if(this.s.c >= u.c) { this.s.c -= u.c; u.q++; u.c = Math.floor(u.c * 1.5); this.render(); } }
+
+    prestige() {
+        if(this.s.c >= 10000000) { 
+            this.s.shards += Math.floor(Math.sqrt(this.s.c / 10000000));
+            this.s.c = 0; Object.values(this.s.upg).forEach(u => { u.q = 0; u.c = Math.floor(u.c * 0.4); });
+            this.s.dataPoints += Math.floor(this.s.shards / 10);
+            this.render();
+        }
+    }
+
+    render() {
+        document.getElementById('cDisp').innerText = this.format(this.s.c);
+        document.getElementById('ppsDisplay').innerText = "PPS: " + this.format(this.calcPPS());
+        // ── Nexus unlock widget ──
+        const unlockDiv = document.getElementById('unlockRes');
+        if(this.s.resUnlocked) {
+            unlockDiv.style.display = 'none';
+        } else {
+            unlockDiv.style.display = 'block';
+            const target = 1000000;
+            const pct = Math.min(this.s.c / target * 100, 100);
+            const canUnlock = this.s.c >= target;
+            document.getElementById('nexusBar').style.width = pct.toFixed(1) + '%';
+            document.getElementById('nexusPct').textContent = pct.toFixed(1) + '%';
+            document.getElementById('nexusRemaining').textContent = canUnlock
+                ? '✓ READY'
+                : 'NEED: ' + this.format(target - this.s.c);
+            const btn = document.getElementById('nexusUnlockBtn');
+            btn.disabled = !canUnlock;
+            if(canUnlock) {
+                btn.textContent = '⬡ UNLOCK NEXUS';
+                btn.style.color = 'var(--blue)';
+                btn.style.borderColor = 'var(--blue)';
+                btn.style.cursor = 'pointer';
+                btn.style.boxShadow = '0 0 16px rgba(0,242,255,0.15)';
+            } else {
+                btn.textContent = 'LOCKED';
+                btn.style.color = 'rgba(0,242,255,0.3)';
+                btn.style.borderColor = 'rgba(0,242,255,0.2)';
+                btn.style.cursor = 'not-allowed';
+                btn.style.boxShadow = 'none';
+            }
+        }
+        
+        let ascendBtn = document.getElementById('realAscendBtn');
+        let canAscend = this.s.c >= 10000000;
+        ascendBtn.disabled = !canAscend;
+        document.getElementById('ascendReq').innerText = canAscend ? "READY TO ASCEND" : `REQ: ${this.format(10000000 - this.s.c)} MORE`;
+
+        // ── Upgrades: build once, then patch only changed text nodes ──
+        const list = document.getElementById('upgList');
+        const ids = Object.keys(this.s.upg);
+
+        // First render: create all buttons
+        if(list.children.length !== ids.length) {
+            list.innerHTML = '';
+            for(let id of ids) {
+                let u = this.s.upg[id];
+                const btn = document.createElement('button');
+                btn.className = 'btn-action';
+                btn.onclick = () => MONLITH.buy(id);
+                btn.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+                        <span style="font-weight:600;letter-spacing:1px;">${u.n} <span class="upg-qty" style="opacity:0.5;font-weight:400;">(${u.q})</span></span>
+                        <span class="upg-contrib"></span>
+                    </div>
+                    <div style="font-size:0.75rem;opacity:0.45;margin-bottom:6px;line-height:1.4;">${u.d}</div>
+                    <div class="upg-cost" style="font-size:0.75rem;opacity:0.5;color:var(--blue);"></div>`;
+                btn.dataset.id = id;
+                list.appendChild(btn);
+            }
+        }
+
+        // Every tick: patch only the dynamic text, never replace the button
+        for(let btn of list.children) {
+            const id = btn.dataset.id;
+            const u = this.s.upg[id];
+            const canAfford = this.s.c >= u.c;
+            btn.disabled = false; // keep hover working; use opacity instead
+            btn.style.opacity = canAfford ? '1' : '0.45';
+
+            btn.querySelector('.upg-qty').textContent = `(${u.q})`;
+            const contrib = btn.querySelector('.upg-contrib');
+            if(u.q > 0) {
+                contrib.style.color = 'var(--blue)';
+                contrib.style.opacity = '0.7';
+                contrib.textContent = `+${this.format(u.q * u.p)}/s total`;
+            } else {
+                contrib.style.color = '';
+                contrib.style.opacity = '0.35';
+                contrib.textContent = `+${this.format(u.p)}/s each`;
+            }
+            btn.querySelector('.upg-cost').textContent = `COST: ${this.format(u.c)}`;
+        }
+
+        // ── Research Tree ──
+        if(this.s.resUnlocked) {
+            const area = document.getElementById('researchArea');
+            const rs = this.s.research;
+            const rIds = Object.keys(rs);
+
+            if(!area.dataset.built) {
+                area.dataset.built = '1';
+                area.innerHTML = '';
+
+                // DP header
+                const hdr = document.createElement('div');
+                hdr.id = 'dpHeader';
+                hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin:20px 0 16px;';
+                hdr.innerHTML = `<h3 style="margin:0;">RESEARCH TREE</h3><span id="dpCount" style="font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--blue);"></span>`;
+                area.appendChild(hdr);
+
+                // Branch headers
+                const branches = [
+                    { key: 'prod',   label: '⬡ PRODUCTION',  color: '#00f2ff' },
+                    { key: 'click',  label: '⬡ CLICK POWER', color: '#a78bfa' },
+                    { key: 'global', label: '⬡ GLOBAL AMP',  color: '#34d399' },
+                ];
+
+                // Tiers 1-4: 3 columns
+                for(let tier = 1; tier <= 4; tier++) {
+                    const tierRow = document.createElement('div');
+                    tierRow.style.cssText = 'margin-bottom:6px;';
+                    const tierLabel = document.createElement('div');
+                    tierLabel.style.cssText = 'font-size:0.6rem;letter-spacing:3px;opacity:0.3;font-family:\'Share Tech Mono\',monospace;margin-bottom:6px;';
+                    tierLabel.textContent = `TIER ${tier}`;
+                    tierRow.appendChild(tierLabel);
+
+                    const cols = document.createElement('div');
+                    cols.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;';
+
+                    for(let b of branches) {
+                        const node = Object.entries(rs).find(([,r]) => r.tier === tier && r.branch === b.key);
+                        if(!node) { cols.appendChild(document.createElement('div')); continue; }
+                        const [id, r] = node;
+                        const card = document.createElement('div');
+                        card.dataset.resId = id;
+                        card.className = 'res-tree-card';
+                        card.style.cssText = `background:var(--panel);border:1px solid var(--border);padding:10px;cursor:pointer;transition:all 0.25s;position:relative;`;
+                        card.innerHTML = `
+                            <div style="font-size:0.6rem;letter-spacing:2px;color:${b.color};opacity:0.7;margin-bottom:4px;font-family:'Share Tech Mono',monospace;">${b.label}</div>
+                            <div class="rt-name" style="font-size:0.78rem;font-weight:600;letter-spacing:1px;margin-bottom:4px;">${r.n}</div>
+                            <div class="rt-effect" style="font-size:0.68rem;color:${b.color};margin-bottom:6px;font-family:'Share Tech Mono',monospace;"></div>
+                            <div style="font-size:0.65rem;opacity:0.35;line-height:1.4;margin-bottom:8px;">${r.d}</div>
+                            <div class="rt-status" style="font-size:0.65rem;font-family:'Share Tech Mono',monospace;letter-spacing:1px;"></div>`;
+                        card.onclick = () => MONLITH.buyResearch(id);
+                        cols.appendChild(card);
+                    }
+                    tierRow.appendChild(cols);
+
+                    // connector line between tiers
+                    if(tier < 4) {
+                        const line = document.createElement('div');
+                        line.style.cssText = 'height:14px;display:flex;align-items:center;justify-content:center;opacity:0.2;font-size:0.7rem;letter-spacing:4px;color:var(--blue);margin:2px 0;';
+                        line.textContent = '▼ ▼ ▼';
+                        tierRow.appendChild(line);
+                    }
+                    area.appendChild(tierRow);
+                }
+
+                // Tier 5 — Omega (full width)
+                const omegaDivider = document.createElement('div');
+                omegaDivider.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,rgba(0,242,255,0.2),transparent);margin:10px 0 8px;';
+                area.appendChild(omegaDivider);
+
+                const omegaLabel = document.createElement('div');
+                omegaLabel.style.cssText = 'font-size:0.6rem;letter-spacing:3px;opacity:0.3;font-family:\'Share Tech Mono\',monospace;margin-bottom:6px;';
+                omegaLabel.textContent = 'TIER 5 — OMEGA';
+                area.appendChild(omegaLabel);
+
+                const omegaNode = Object.entries(rs).find(([,r]) => r.tier === 5);
+                if(omegaNode) {
+                    const [id, r] = omegaNode;
+                    const card = document.createElement('div');
+                    card.dataset.resId = id;
+                    card.className = 'res-tree-card';
+                    card.style.cssText = 'background:var(--panel);border:1px solid rgba(0,242,255,0.3);padding:14px;cursor:pointer;transition:all 0.25s;';
+                    card.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+                            <span class="rt-name" style="font-size:0.85rem;font-weight:600;letter-spacing:2px;color:var(--blue);">${r.n}</span>
+                            <span class="rt-effect" style="font-size:0.72rem;font-family:'Share Tech Mono',monospace;color:var(--blue);"></span>
+                        </div>
+                        <div style="font-size:0.7rem;opacity:0.4;line-height:1.5;margin-bottom:10px;">${r.d}</div>
+                        <div style="font-size:0.65rem;opacity:0.3;font-family:'Share Tech Mono',monospace;margin-bottom:8px;">REQUIRES: ALL TIER 4 RESEARCH</div>
+                        <div class="rt-status" style="font-size:0.7rem;font-family:'Share Tech Mono',monospace;letter-spacing:1px;"></div>`;
+                    card.onclick = () => MONLITH.buyResearch(id);
+                    area.appendChild(card);
+                }
+            }
+
+            // Update DP counter
+            document.getElementById('dpCount').textContent = `${this.s.dataPoints} DP`;
+
+            // Update all cards
+            for(let card of area.querySelectorAll('.res-tree-card')) {
+                const id = card.dataset.resId;
+                const r = rs[id];
+                const prereqsMet = r.req.every(req => rs[req]?.bought);
+                const canAfford = this.s.dataPoints >= r.cost;
+                const statusEl = card.querySelector('.rt-status');
+                const effectEl = card.querySelector('.rt-effect');
+
+                effectEl.textContent = r.effect;
+
+                if(r.bought) {
+                    card.style.borderColor = 'var(--blue)';
+                    card.style.background = 'rgba(0,242,255,0.06)';
+                    card.style.opacity = '1';
+                    card.style.cursor = 'default';
+                    statusEl.style.color = 'var(--blue)';
+                    statusEl.textContent = '✓ RESEARCHED';
+                } else if(!prereqsMet) {
+                    card.style.borderColor = 'rgba(64,223,255,0.08)';
+                    card.style.background = 'rgba(16,25,34,0.3)';
+                    card.style.opacity = '0.4';
+                    card.style.cursor = 'not-allowed';
+                    statusEl.style.color = 'rgba(224,233,240,0.3)';
+                    statusEl.textContent = 'LOCKED';
+                } else if(canAfford) {
+                    card.style.borderColor = 'rgba(0,242,255,0.5)';
+                    card.style.background = 'rgba(0,242,255,0.04)';
+                    card.style.opacity = '1';
+                    card.style.cursor = 'pointer';
+                    statusEl.style.color = 'var(--blue)';
+                    statusEl.textContent = `COST: ${r.cost} DP — BUY`;
+                } else {
+                    card.style.borderColor = 'var(--border)';
+                    card.style.background = 'var(--panel)';
+                    card.style.opacity = '0.7';
+                    card.style.cursor = 'not-allowed';
+                    statusEl.style.color = 'rgba(224,233,240,0.35)';
+                    statusEl.textContent = `NEED ${r.cost - this.s.dataPoints} MORE DP`;
+                }
+            }
+        }
+    }
+    
+    save() {
+        localStorage.setItem('MONLITH_DATA', JSON.stringify(this.s));
+        const msg = document.getElementById('saveStatusMsg');
+        if(msg) {
+            const now = new Date();
+            const t = now.toTimeString().slice(0,8);
+            msg.textContent = `LAST SAVED: ${t}`;
+            msg.style.color = 'rgba(0,242,255,0.5)';
+        }
+    }
+    load() {
+        let d = localStorage.getItem('MONLITH_DATA');
+        if(!d) return;
+        let saved = JSON.parse(d);
+        for(let k of ['c','shards','resUnlocked','dataPoints','clickPower','scale'])
+            if(saved[k] !== undefined) this.s[k] = saved[k];
+        if(saved.upg) for(let id in saved.upg) if(this.s.upg[id]) Object.assign(this.s.upg[id], saved.upg[id]);
+        if(saved.research) for(let id in saved.research) if(this.s.research[id]) Object.assign(this.s.research[id], saved.research[id]);
+    }
+    confirmReset() {
+        const modal = document.getElementById('resetModal');
+        modal.style.display = 'flex';
+        document.getElementById('resetConfirmInput').value = '';
+        document.getElementById('resetInputErr').style.color = 'rgba(255,68,102,0)';
+        document.getElementById('resetConfirmBtn').disabled = true;
+        document.getElementById('resetConfirmBtn').style.color = 'rgba(255,68,102,0.3)';
+        document.getElementById('resetConfirmBtn').style.borderColor = 'rgba(255,68,102,0.2)';
+        document.getElementById('resetConfirmBtn').style.cursor = 'not-allowed';
+        setTimeout(() => document.getElementById('resetConfirmInput').focus(), 50);
+    }
+    cancelReset() {
+        document.getElementById('resetModal').style.display = 'none';
+    }
+    resetInputCheck() {
+        const val = document.getElementById('resetConfirmInput').value.toUpperCase().trim();
+        const btn = document.getElementById('resetConfirmBtn');
+        const err = document.getElementById('resetInputErr');
+        if(val === 'CONFIRM') {
+            btn.disabled = false;
+            btn.style.color = '#ff4466';
+            btn.style.borderColor = 'rgba(255,68,102,0.6)';
+            btn.style.cursor = 'pointer';
+            err.style.color = 'rgba(255,68,102,0)';
+        } else {
+            btn.disabled = true;
+            btn.style.color = 'rgba(255,68,102,0.3)';
+            btn.style.borderColor = 'rgba(255,68,102,0.2)';
+            btn.style.cursor = 'not-allowed';
+            if(val.length >= 7) err.style.color = 'rgba(255,68,102,0.7)';
+            else err.style.color = 'rgba(255,68,102,0)';
+        }
+    }
+    executeReset() {
+        const val = document.getElementById('resetConfirmInput').value.toUpperCase().trim();
+        if(val !== 'CONFIRM') return;
+        localStorage.removeItem('MONLITH_DATA');
+        location.reload();
+    }
+    exportSave() {
+        const encoded = btoa(JSON.stringify(this.s));
+        const msg = document.getElementById('saveStatusMsg');
+        navigator.clipboard.writeText(encoded).then(() => {
+            if(msg) { msg.textContent = '✓ COPIED TO CLIPBOARD'; msg.style.color = 'rgba(0,242,255,0.8)'; }
+            setTimeout(() => {
+                const now = new Date();
+                if(msg) { msg.textContent = `LAST SAVED: ${now.toTimeString().slice(0,8)}`; msg.style.color = 'rgba(0,242,255,0.5)'; }
+            }, 2000);
+        }).catch(() => {
+            prompt('Copy this save string:', encoded);
+        });
+    }
+    showImport() {
+        document.getElementById('importModal').style.display = 'flex';
+        document.getElementById('importInput').value = '';
+        document.getElementById('importErr').style.color = 'rgba(255,68,102,0)';
+        setTimeout(() => document.getElementById('importInput').focus(), 50);
+    }
+    cancelImport() {
+        document.getElementById('importModal').style.display = 'none';
+    }
+    executeImport() {
+        const raw = document.getElementById('importInput').value.trim();
+        try {
+            const parsed = JSON.parse(atob(raw));
+            // Validate it looks like a real save
+            if(typeof parsed.c !== 'number' || !parsed.upg) throw new Error('bad save');
+            localStorage.setItem('MONLITH_DATA', JSON.stringify(parsed));
+            location.reload();
+        } catch(e) {
+            const err = document.getElementById('importErr');
+            err.style.color = 'rgba(255,68,102,0.8)';
+            setTimeout(() => { err.style.color = 'rgba(255,68,102,0)'; }, 2000);
+        }
+    }
+    
+    loop() {
+        if(this._loopStarted) return;
+        this._loopStarted = true;
+        this.render();
+        setInterval(() => { this.s.c += (this.calcPPS() / 10); this.render(); this.save(); }, 100);
+    }
+}
+const MONLITH = new MonlithEngine();
+</script>
+</body>
+</html>
